@@ -1,5 +1,6 @@
 package tfg.taxicentral;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -34,6 +36,15 @@ public class GoToActivity extends ActionBarActivity {
 
         mGetCountriesTask = new GetCountriesTask();
         mGetCountriesTask.execute((Void) null);
+
+        Button mGoToButton = (Button) findViewById(R.id.goToButton);
+        mGoToButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), NavigationActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     public void createInstanceArrayAdapter() {

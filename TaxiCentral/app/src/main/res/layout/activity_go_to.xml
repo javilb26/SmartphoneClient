@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.pfg.taxicentral.GoToActivity">
+
+    <TextView
+        android:id="@+id/countriesTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="Countries: " />
+
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteTextViewCountries"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/countriesTextView"
+        android:ems="10"
+        android:text="">
+        <requestFocus />
+    </AutoCompleteTextView>
+
+    <TextView
+        android:id="@+id/regionsTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/autoCompleteTextViewCountries"
+        android:text="Regions: " />
+
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteTextViewRegions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/regionsTextView"
+        android:ems="10"
+        android:text="">
+        <requestFocus />
+    </AutoCompleteTextView>
+
+    <Button
+        android:id="@+id/goToButton"
+        style="?android:textAppearanceSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/autoCompleteTextViewRegions"
+        android:text="Go To"
+        android:textStyle="bold"/>
+
+</RelativeLayout>

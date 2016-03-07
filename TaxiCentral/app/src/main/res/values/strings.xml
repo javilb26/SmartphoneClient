@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">TaxiCentral</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_taxiId">Taxi ID</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_log_in">Log in</string>
+    <string name="error_invalid_taxiId">This taxi ID is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+
+    <!-- Strings related to menu -->
+</resources>

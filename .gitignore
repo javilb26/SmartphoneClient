@@ -30,19 +30,6 @@ proguard/
 
 # Android Studio captures folder
 captures/
-TaxiCentral/settings.gradle
-TaxiCentral/gradle/wrapper/gradle-wrapper.jar
-TaxiCentral/gradle/wrapper/gradle-wrapper.properties
-TaxiCentral/gradlew
-TaxiCentral/gradlew.bat
-TaxiCentral/gradle.properties
 TaxiCentral/app/src/test/java/tfg/taxicentral/ExampleUnitTest.java
-TaxiCentral/app/src/main/res/values/styles.xml
-TaxiCentral/app/src/main/res/values/colors.xml
-TaxiCentral/app/src/main/res/mipmap-hdpi/ic_launcher.png
-TaxiCentral/app/src/main/res/mipmap-mdpi/ic_launcher.png
-TaxiCentral/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-TaxiCentral/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-TaxiCentral/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
 TaxiCentral/app/src/androidTest/java/tfg/taxicentral/ApplicationTest.java
 TaxiCentral/.idea/

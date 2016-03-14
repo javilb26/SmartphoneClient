@@ -28,6 +28,8 @@ public class GoToActivity extends ActionBarActivity {
 
     private GetCountriesTask mGetCountriesTask = null;
     String[] countries;
+    private GetRegionsTask mGetRegionsTask = null;
+    String[] regions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +38,12 @@ public class GoToActivity extends ActionBarActivity {
 
         mGetCountriesTask = new GetCountriesTask();
         mGetCountriesTask.execute((Void) null);
-
+/*
+        if (mGetCountriesTask!=null){
+            mGetRegionsTask = new GetRegionsTask(new Long(1));
+            mGetRegionsTask.execute((Void) null);
+        }
+*/
         Button mGoToButton = (Button) findViewById(R.id.goToButton);
         mGoToButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,7 +54,7 @@ public class GoToActivity extends ActionBarActivity {
         });
     }
 
-    public void createInstanceArrayAdapter() {
+    public void createInstanceArrayAdapterCountries() {
         //Creating the instance of ArrayAdapter containing list of language names
         ArrayAdapter<String> adapter = new ArrayAdapter<String>
                 (this,android.R.layout.select_dialog_item, countries);
@@ -58,10 +65,17 @@ public class GoToActivity extends ActionBarActivity {
         actv.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
+    public void createInstanceArrayAdapterRegions() {
+        //Creating the instance of ArrayAdapter containing list of language names
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>
+                (this,android.R.layout.select_dialog_item, regions);
+
+        //Getting the instance of AutoCompleteTextView
+        AutoCompleteTextView actv = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextViewCountries);
+        actv.setThreshold(1);//will start working from first character
+        actv.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
+    }
+
     public class GetCountriesTask extends AsyncTask<Void, Void, Boolean> {
 
         GetCountriesTask() {
@@ -77,24 +91,17 @@ public class GoToActivity extends ActionBarActivity {
             {
                 HttpResponse resp = httpClient.execute(get);
                 String respStr = EntityUtils.toString(resp.getEntity());
-                Log.e("Cero",respStr);
+                Log.e("Error",respStr);
                 JSONArray respJSON = new JSONArray(respStr);
-
                 countries = new String[respJSON.length()];
-
-                for(int i=0; i<respJSON.length(); i++)
-                {
+                for(int i=0; i<respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
-
                     //Long countryId = new Long(obj.getInt("countryId"));
                     String name = obj.getString("name");
-                    //Rellenamos la lista con los resultados
                     countries[i] = name;
                 }
-
             }
-            catch(Exception ex)
-            {
+            catch(Exception ex) {
                 Log.e("ServicioRest","Error!", ex);
                 return false;
             }
@@ -103,7 +110,49 @@ public class GoToActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            createInstanceArrayAdapter();
+            createInstanceArrayAdapterCountries();
+        }
+
+    }
+
+    public class GetRegionsTask extends AsyncTask<Void, Void, Boolean> {
+
+        private final Long mCountryId;
+
+        GetRegionsTask(Long countryId) {
+            mCountryId = countryId;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            boolean resul = true;
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpGet get = new HttpGet("http://10.0.2.2:8080/SpringMVCHibernate/country/" + mCountryId + "/region");
+            get.setHeader("content-type", "application/json");
+            try
+            {
+                HttpResponse resp = httpClient.execute(get);
+                String respStr = EntityUtils.toString(resp.getEntity());
+                Log.e("Error Background", respStr);
+                JSONArray respJSON = new JSONArray(respStr);
+                regions = new String[respJSON.length()];
+                for(int i=0; i<respJSON.length(); i++) {
+                    JSONObject obj = respJSON.getJSONObject(i);
+                    //Long countryId = new Long(obj.getInt("countryId"));
+                    String name = obj.getString("name");
+                    regions[i] = name;
+                }
+            }
+            catch(Exception ex) {
+                Log.e("ServicioRest","Error!", ex);
+                return false;
+            }
+            return resul;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            createInstanceArrayAdapterRegions();
         }
 
     }

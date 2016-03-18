@@ -45,13 +45,53 @@
         <requestFocus />
     </AutoCompleteTextView>
 
+    <TextView
+        android:id="@+id/citiesTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/autoCompleteTextViewRegions"
+        android:text="Cities: " />
+
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteTextViewCities"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/citiesTextView"
+        android:ems="10"
+        android:text="">
+        <requestFocus />
+    </AutoCompleteTextView>
+
+    <TextView
+        android:id="@+id/addressesTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/autoCompleteTextViewCities"
+        android:text="Addresses: " />
+
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteTextViewAddresses"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/addressesTextView"
+        android:ems="10"
+        android:text="">
+        <requestFocus />
+    </AutoCompleteTextView>
+
     <Button
         android:id="@+id/goToButton"
         style="?android:textAppearanceSmall"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_below="@+id/autoCompleteTextViewRegions"
+        android:layout_below="@+id/autoCompleteTextViewAddresses"
         android:text="Go To"
         android:textStyle="bold"/>
 

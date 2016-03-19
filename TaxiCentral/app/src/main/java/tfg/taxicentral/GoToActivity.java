@@ -27,7 +27,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class GoToActivity extends ActionBarActivity {
 
@@ -35,7 +38,8 @@ public class GoToActivity extends ActionBarActivity {
     String[] countries;
     String countrySelected;
     private GetRegionsTask mGetRegionsTask = null;
-    String[] regions;
+    String[] regionsString = null;
+    HashMap<String, Long> regions = new HashMap<String, Long>();
     String regionSelected;
     private GetCitiesTask mGetCitiesTask = null;
     String[] cities;
@@ -55,46 +59,32 @@ public class GoToActivity extends ActionBarActivity {
         mGetCountriesTask = new GetCountriesTask();
         mGetCountriesTask.execute((Void) null);
 
-        if (mGetCountriesTask!=null){
-            mGetRegionsTask = new GetRegionsTask(new Long(1));
-            mGetRegionsTask.execute((Void) null);
-        }
-
-        if (mGetRegionsTask!=null){
-            mGetCitiesTask = new GetCitiesTask(new Long(9));
-            mGetCitiesTask.execute((Void) null);
-        }
-
-        if (mGetCitiesTask!=null){
-            mGetAddressesTask = new GetAddressesTask(new Long(6944));
-            mGetAddressesTask.execute((Void) null);
-        }
-
         Button mGoToButton = (Button) findViewById(R.id.goToButton);
         mGoToButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    String url = addressSelected + ", " + citySelected + ", " + regionSelected + ", " + countrySelected;
-                    try {
-                        geocodeMatches =
-                                new Geocoder(getApplicationContext()).getFromLocationName(
-                                        url, 1);
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+                String url = addressSelected + ", " + citySelected + ", " + regionSelected + ", " + countrySelected;
+                try {
+                    geocodeMatches =
+                            new Geocoder(getApplicationContext()).getFromLocationName(
+                                    url, 1);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 
-                    if (!geocodeMatches.isEmpty()) {
-                        lat = geocodeMatches.get(0).getLatitude();
-                        lng = geocodeMatches.get(0).getLongitude();
-                    }
-                Log.e("lat", lat.toString());
-                Log.e("lng", lng.toString());
-                Intent intent = new Intent(getApplicationContext(), NavigationActivity.class);
-                intent.putExtra("url",url);
-                intent.putExtra("lat",lat);
-                intent.putExtra("lng",lng);
-                startActivity(intent);
+                if (!geocodeMatches.isEmpty()) {
+                    lat = geocodeMatches.get(0).getLatitude();
+                    lng = geocodeMatches.get(0).getLongitude();
+                    Log.e("lat", lat.toString());
+                    Log.e("lng", lng.toString());
+                    Intent intent = new Intent(getApplicationContext(), NavigationActivity.class);
+                    intent.putExtra("url", url);
+                    intent.putExtra("lat", lat);
+                    intent.putExtra("lng", lng);
+                    startActivity(intent);
+                }
+                Toast.makeText(getApplicationContext(), "Destino no encontrado", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -112,15 +102,26 @@ public class GoToActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 countrySelected = (String) parent.getItemAtPosition(position);
+                mGetRegionsTask = new GetRegionsTask(new Long(1));
+                mGetRegionsTask.execute((Void) null);
             }
         });
 
     }
 
     public void createInstanceArrayAdapterRegions() {
+
+        Iterator it = regions.entrySet().iterator();
+        int i=0;
+        while (it.hasNext()) {
+            Map.Entry e = (Map.Entry) it.next();
+            regionsString[i] = e.getKey().toString();
+            i+=1;
+        }
+
         //Creating the instance of ArrayAdapter containing list of language names
         ArrayAdapter<String> adapterR = new ArrayAdapter<String>
-                (this,android.R.layout.select_dialog_item, regions);
+                (this,android.R.layout.select_dialog_item, regionsString);
 
         //Getting the instance of AutoCompleteTextView
         AutoCompleteTextView actvR = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextViewRegions);
@@ -130,6 +131,9 @@ public class GoToActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 regionSelected = (String) parent.getItemAtPosition(position);
+                Log.e("Clave 9 == ", regions.get(regionSelected).toString());
+                mGetCitiesTask = new GetCitiesTask(regions.get(regionSelected));
+                mGetCitiesTask.execute((Void) null);
             }
         });
     }
@@ -147,6 +151,8 @@ public class GoToActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 citySelected = (String) parent.getItemAtPosition(position);
+                mGetAddressesTask = new GetAddressesTask(new Long(6944));
+                mGetAddressesTask.execute((Void) null);
             }
         });
     }
@@ -225,12 +231,13 @@ public class GoToActivity extends ActionBarActivity {
                 HttpResponse resp = httpClient.execute(get);
                 String respStr = EntityUtils.toString(resp.getEntity());
                 JSONArray respJSON = new JSONArray(respStr);
-                regions = new String[respJSON.length()];
+                regionsString = new String[respJSON.length()];
                 for(int i=0; i<respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
-                    //Long countryId = new Long(obj.getInt("countryId"));
+                    Long regionId = new Long(obj.getInt("regionId"));
                     String name = obj.getString("name");
-                    regions[i] = name;
+                    regions.put(name, regionId);
+                    //regions[i] = name;
                 }
             }
             catch(Exception ex) {

@@ -2,6 +2,8 @@ package tfg.taxicentral;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -22,18 +25,27 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GoToActivity extends ActionBarActivity {
 
     private GetCountriesTask mGetCountriesTask = null;
     String[] countries;
+    String countrySelected;
     private GetRegionsTask mGetRegionsTask = null;
     String[] regions;
+    String regionSelected;
     private GetCitiesTask mGetCitiesTask = null;
     String[] cities;
+    String citySelected;
     private GetAddressesTask mGetAddressesTask = null;
     String[] addresses;
+    String addressSelected;
+    List<Address> geocodeMatches = null;
+    Double lat, lng;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,14 +60,40 @@ public class GoToActivity extends ActionBarActivity {
             mGetRegionsTask.execute((Void) null);
         }
 
-        //TODO Completar con los task city y address
+        if (mGetRegionsTask!=null){
+            mGetCitiesTask = new GetCitiesTask(new Long(9));
+            mGetCitiesTask.execute((Void) null);
+        }
+
+        if (mGetCitiesTask!=null){
+            mGetAddressesTask = new GetAddressesTask(new Long(6944));
+            mGetAddressesTask.execute((Void) null);
+        }
 
         Button mGoToButton = (Button) findViewById(R.id.goToButton);
         mGoToButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO (Mirar si hacer antes la conversion o despues) Recuperar datos goto y enviar a NavigationActivity
+                    String url = addressSelected + ", " + citySelected + ", " + regionSelected + ", " + countrySelected;
+                    try {
+                        geocodeMatches =
+                                new Geocoder(getApplicationContext()).getFromLocationName(
+                                        url, 1);
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+
+                    if (!geocodeMatches.isEmpty()) {
+                        lat = geocodeMatches.get(0).getLatitude();
+                        lng = geocodeMatches.get(0).getLongitude();
+                    }
+                Log.e("lat", lat.toString());
+                Log.e("lng", lng.toString());
                 Intent intent = new Intent(getApplicationContext(), NavigationActivity.class);
+                intent.putExtra("url",url);
+                intent.putExtra("lat",lat);
+                intent.putExtra("lng",lng);
                 startActivity(intent);
             }
         });
@@ -70,6 +108,13 @@ public class GoToActivity extends ActionBarActivity {
         AutoCompleteTextView actvC = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextViewCountries);
         actvC.setThreshold(1);//will start working from first character
         actvC.setAdapter(adapterC);//setting the adapter data into the AutoCompleteTextView
+        actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                countrySelected = (String) parent.getItemAtPosition(position);
+            }
+        });
+
     }
 
     public void createInstanceArrayAdapterRegions() {
@@ -81,6 +126,12 @@ public class GoToActivity extends ActionBarActivity {
         AutoCompleteTextView actvR = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextViewRegions);
         actvR.setThreshold(1);//will start working from first character
         actvR.setAdapter(adapterR);//setting the adapter data into the AutoCompleteTextView
+        actvR.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                regionSelected = (String) parent.getItemAtPosition(position);
+            }
+        });
     }
 
     public void createInstanceArrayAdapterCities() {
@@ -92,6 +143,12 @@ public class GoToActivity extends ActionBarActivity {
         AutoCompleteTextView actvCi = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextViewCities);
         actvCi.setThreshold(1);//will start working from first character
         actvCi.setAdapter(adapterCi);//setting the adapter data into the AutoCompleteTextView
+        actvCi.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                citySelected = (String) parent.getItemAtPosition(position);
+            }
+        });
     }
 
     public void createInstanceArrayAdapterAddresses() {
@@ -103,6 +160,12 @@ public class GoToActivity extends ActionBarActivity {
         AutoCompleteTextView actvA = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextViewAddresses);
         actvA.setThreshold(1);//will start working from first character
         actvA.setAdapter(adapterA);//setting the adapter data into the AutoCompleteTextView
+        actvA.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                addressSelected = (String) parent.getItemAtPosition(position);
+            }
+        });
     }
 
     public class GetCountriesTask extends AsyncTask<Void, Void, Boolean> {
@@ -114,13 +177,12 @@ public class GoToActivity extends ActionBarActivity {
         protected Boolean doInBackground(Void... params) {
             boolean resul = true;
             HttpClient httpClient = new DefaultHttpClient();
-            HttpGet get = new HttpGet("http://10.0.2.2:8080/SpringMVCHibernate/country");
+            HttpGet get = new HttpGet("http://192.168.1.34:8080/SpringMVCHibernate/country");
             get.setHeader("content-type", "application/json");
             try
             {
                 HttpResponse resp = httpClient.execute(get);
                 String respStr = EntityUtils.toString(resp.getEntity());
-                Log.e("Error",respStr);
                 JSONArray respJSON = new JSONArray(respStr);
                 countries = new String[respJSON.length()];
                 for(int i=0; i<respJSON.length(); i++) {
@@ -156,13 +218,12 @@ public class GoToActivity extends ActionBarActivity {
         protected Boolean doInBackground(Void... params) {
             boolean resul = true;
             HttpClient httpClient = new DefaultHttpClient();
-            HttpGet get = new HttpGet("http://10.0.2.2:8080/SpringMVCHibernate/country/" + mCountryId);
+            HttpGet get = new HttpGet("http://192.168.1.34:8080/SpringMVCHibernate/country/" + mCountryId);
             get.setHeader("content-type", "application/json");
             try
             {
                 HttpResponse resp = httpClient.execute(get);
                 String respStr = EntityUtils.toString(resp.getEntity());
-                Log.e("Error Background", respStr);
                 JSONArray respJSON = new JSONArray(respStr);
                 regions = new String[respJSON.length()];
                 for(int i=0; i<respJSON.length(); i++) {
@@ -198,13 +259,12 @@ public class GoToActivity extends ActionBarActivity {
         protected Boolean doInBackground(Void... params) {
             boolean resul = true;
             HttpClient httpClient = new DefaultHttpClient();
-            HttpGet get = new HttpGet("http://10.0.2.2:8080/SpringMVCHibernate/region/" + mRegionId);
+            HttpGet get = new HttpGet("http://192.168.1.34:8080/SpringMVCHibernate/region/" + mRegionId);
             get.setHeader("content-type", "application/json");
             try
             {
                 HttpResponse resp = httpClient.execute(get);
                 String respStr = EntityUtils.toString(resp.getEntity());
-                Log.e("Error Background", respStr);
                 JSONArray respJSON = new JSONArray(respStr);
                 cities = new String[respJSON.length()];
                 for(int i=0; i<respJSON.length(); i++) {
@@ -240,13 +300,12 @@ public class GoToActivity extends ActionBarActivity {
         protected Boolean doInBackground(Void... params) {
             boolean resul = true;
             HttpClient httpClient = new DefaultHttpClient();
-            HttpGet get = new HttpGet("http://10.0.2.2:8080/SpringMVCHibernate/city/" + mCityId);
+            HttpGet get = new HttpGet("http://192.168.1.34:8080/SpringMVCHibernate/city/" + mCityId);
             get.setHeader("content-type", "application/json");
             try
             {
                 HttpResponse resp = httpClient.execute(get);
                 String respStr = EntityUtils.toString(resp.getEntity());
-                Log.e("Error Background", respStr);
                 JSONArray respJSON = new JSONArray(respStr);
                 addresses = new String[respJSON.length()];
                 for(int i=0; i<respJSON.length(); i++) {
@@ -269,4 +328,5 @@ public class GoToActivity extends ActionBarActivity {
         }
 
     }
+
 }

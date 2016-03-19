@@ -37,10 +37,12 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // TODO Rellenar con el lugar de destino
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        String url = getIntent().getStringExtra("url");
+        double lat = getIntent().getDoubleExtra("lat", 43.3415225);
+        double lng = getIntent().getDoubleExtra("lng", -8.4477031);
+        LatLng latLng = new LatLng(lat, lng);
+        mMap.addMarker(new MarkerOptions().position(latLng).title("Destination: "+url));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
     }
 }

@@ -2,6 +2,7 @@ package tfg.taxicentral;
 
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,12 +40,10 @@ public class ActualStateActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         String item = (String) getListAdapter().getItem(position);
-        Toast.makeText(this, item + " selected", Toast.LENGTH_LONG).show();
         if (mActualStateTask != null) {
             return;
         }
-        Long l1 = new Long(1);
-        mActualStateTask = new ActualStateTask(l1, item);
+        mActualStateTask = new ActualStateTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), item);
         mActualStateTask.execute((Void) null);
         super.finish();
     }
@@ -67,7 +66,7 @@ public class ActualStateActivity extends ListActivity {
         protected Boolean doInBackground(Void... params) {
             boolean resul = true;
             HttpClient httpClient = new DefaultHttpClient();
-            HttpPut put = new HttpPut("http://10.0.2.2:8080/SpringMVCHibernate/taxi/" + mTaxiId + "/actualstate/" + mState);
+            HttpPut put = new HttpPut("http://192.168.1.34:8080/SpringMVCHibernate/taxi/" + mTaxiId + "/actualstate/" + mState);
             put.setHeader("content-type", "application/json");
             try
             {

@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_id": "taxicentralandroid",
+    "project_number": "1000166677786",
+    "name": "TaxiCentralAndroid"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1000166677786:android:2813b262cdbd1542",
+        "client_id": "android:tfg.taxicentral",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "tfg.taxicentral",
+          "certificate_hash": []
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1000166677786-mfjb1p9fli0i7c70chjpdtnilh07glvg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "tfg.taxicentral",
+            "certificate_hash": "DB108E40641FE7D3EA028AD91B702F9FCDAD9133"
+          }
+        },
+        {
+          "client_id": "1000166677786-t3nifhrgvb8ur94jascj1cfk6f0n36qs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 2,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 2
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}

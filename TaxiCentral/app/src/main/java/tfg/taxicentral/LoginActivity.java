@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -187,7 +188,7 @@ public class LoginActivity extends ActionBarActivity {
         protected Boolean doInBackground(Void... params) {
             boolean resul = true;
             HttpClient httpClient = new DefaultHttpClient();
-            HttpPost post = new HttpPost("http://10.0.2.2:8080/SpringMVCHibernate/login/");
+            HttpPost post = new HttpPost("http://192.168.1.34:8080/SpringMVCHibernate/login/");
             post.setHeader("content-type", "application/json");
             try
             {
@@ -200,13 +201,24 @@ public class LoginActivity extends ActionBarActivity {
                 String respStr = EntityUtils.toString(resp.getEntity());
                 if(!respStr.equals("true"))
                     resul = false;
+                SharedPreferences.Editor editorSharedPreferences = getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).edit();
+                //if (chkGuardar.isChecked()) {
+                    editorSharedPreferences.clear();
+                    editorSharedPreferences.putLong("taxiId", mTaxiId);
+                    editorSharedPreferences.putString("password", mPassword);
+                    editorSharedPreferences.commit();
+
+                //} else {
+                //    editor.clear();
+                //    editor.commit();
+                //}
             }
             catch(Exception ex)
             {
                 Log.e("ServicioRest","Error!", ex);
                 resul = false;
             }
-            navigatetoHomeActivity();
+            navigatetoMenuActivity();
             return resul;
         }
 
@@ -230,7 +242,7 @@ public class LoginActivity extends ActionBarActivity {
         }
     }
 
-    public void navigatetoHomeActivity(){
+    public void navigatetoMenuActivity(){
         Intent menuIntent = new Intent(getApplicationContext(),MenuActivity.class);
         //menuIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //Este flag se carga la sesion?

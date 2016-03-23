@@ -188,7 +188,8 @@ public class LoginActivity extends ActionBarActivity {
         protected Boolean doInBackground(Void... params) {
             boolean resul = true;
             HttpClient httpClient = new DefaultHttpClient();
-            HttpPost post = new HttpPost("http://192.168.1.34:8080/SpringMVCHibernate/login/");
+            HttpPost post = new HttpPost(getString(R.string.ip)+"login/");
+
             post.setHeader("content-type", "application/json");
             try
             {

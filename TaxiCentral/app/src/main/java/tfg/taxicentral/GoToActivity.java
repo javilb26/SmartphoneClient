@@ -193,7 +193,7 @@ public class GoToActivity extends ActionBarActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             HttpClient httpClient = new DefaultHttpClient();
-            HttpGet get = new HttpGet("http://192.168.1.34:8080/SpringMVCHibernate/country");
+            HttpGet get = new HttpGet(getString(R.string.ip)+"country");
             get.setHeader("content-type", "application/json");
             try
             {
@@ -233,7 +233,7 @@ public class GoToActivity extends ActionBarActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             HttpClient httpClient = new DefaultHttpClient();
-            HttpGet get = new HttpGet("http://192.168.1.34:8080/SpringMVCHibernate/country/" + mCountryId);
+            HttpGet get = new HttpGet(getString(R.string.ip)+"country/" + mCountryId);
             get.setHeader("content-type", "application/json");
             try
             {
@@ -274,7 +274,7 @@ public class GoToActivity extends ActionBarActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             HttpClient httpClient = new DefaultHttpClient();
-            HttpGet get = new HttpGet("http://192.168.1.34:8080/SpringMVCHibernate/region/" + mRegionId);
+            HttpGet get = new HttpGet(getString(R.string.ip)+"region/" + mRegionId);
             get.setHeader("content-type", "application/json");
             try
             {
@@ -314,7 +314,7 @@ public class GoToActivity extends ActionBarActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             HttpClient httpClient = new DefaultHttpClient();
-            HttpGet get = new HttpGet("http://192.168.1.34:8080/SpringMVCHibernate/city/" + mCityId);
+            HttpGet get = new HttpGet(getString(R.string.ip)+"city/" + mCityId);
             get.setHeader("content-type", "application/json");
             try
             {

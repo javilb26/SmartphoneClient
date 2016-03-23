@@ -66,7 +66,7 @@ public class ActualStateActivity extends ListActivity {
         protected Boolean doInBackground(Void... params) {
             boolean resul = true;
             HttpClient httpClient = new DefaultHttpClient();
-            HttpPut put = new HttpPut("http://192.168.1.34:8080/SpringMVCHibernate/taxi/" + mTaxiId + "/actualstate/" + mState);
+            HttpPut put = new HttpPut(getString(R.string.ip)+"taxi/" + mTaxiId + "/actualstate/" + mState);
             put.setHeader("content-type", "application/json");
             try
             {

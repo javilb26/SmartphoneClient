@@ -87,7 +87,7 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         LatLng point = new LatLng(lat, lng);
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
         Log.e("NavigationActivity", "onLocationChanged");
     }
 

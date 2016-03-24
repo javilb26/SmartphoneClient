@@ -5,4 +5,31 @@
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="tfg.taxicentral.NavigationActivity" />
+    tools:context="tfg.taxicentral.NavigationActivity">
+
+    <TextView
+        android:id="@+id/infoRouteTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/futureStateButton"
+        style="?android:textAppearanceSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:layout_below="@+id/infoRouteTextView"
+        android:text="FutureState"
+        android:textStyle="bold"/>
+<!--
+    <Button
+        android:id="@+id/goToButton"
+        style="?android:textAppearanceSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/autoCompleteTextViewAddresses"
+        android:text="Go To"
+        android:textStyle="bold"/>
+-->
+</fragment>

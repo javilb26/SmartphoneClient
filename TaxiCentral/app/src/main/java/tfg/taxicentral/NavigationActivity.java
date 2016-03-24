@@ -1,8 +1,11 @@
 package tfg.taxicentral;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -10,6 +13,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.directions.route.AbstractRouting;
@@ -27,7 +33,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class NavigationActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener, RoutingListener {
 
@@ -36,6 +44,10 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     protected LatLng end;
     protected Location location = null;
     ArrayList<Polyline> polylines = new ArrayList<>();
+    TextView infoRouteTextView = null;
+    Button futureStateButton = null;
+    String infoRouteWithRoutes = null;
+    String infoRoute = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +57,17 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        infoRouteTextView = (TextView) findViewById(R.id.infoRouteTextView);
+        futureStateButton = (Button) findViewById(R.id.futureStateButton);
+        futureStateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.e("App","futurestate");
+                Intent intent = new Intent(getApplicationContext(), FutureStateActivity.class);
+                startActivity(intent);
+
+            }
+        });
     }
 
     /**
@@ -112,6 +135,10 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         mMap.moveCamera(CameraUpdateFactory.newLatLng(start));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(16));
         Log.e("NavigationActivity", "onLocationChanged");
+        if (infoRoute != null) {
+            infoRouteTextView.setText(infoRoute);
+        }
+
     }
 
     @Override
@@ -179,7 +206,9 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
             Polyline polyline = mMap.addPolyline(polyOptions);
             polylines.add(polyline);
 
-            //Toast.makeText(getApplicationContext(),"Route "+ (i+1) +": distance - "+ route.get(i).getDistanceValue()+": duration - "+ route.get(i).getDurationValue(),Toast.LENGTH_SHORT).show();
+            infoRouteWithRoutes = "Route "+ (i+1) +": distance - "+ route.get(i).getDistanceValue()+": duration - "+ route.get(i).getDurationValue();
+            infoRoute = "distance - "+ route.get(i).getDistanceValue()+": duration - "+ route.get(i).getDurationValue();
+            //Toast.makeText(getApplicationContext(), infoRoute,Toast.LENGTH_SHORT).show();
         }
 
         // Start marker

@@ -34,6 +34,8 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     protected GoogleMap mMap;
     protected LatLng start;
     protected LatLng end;
+    protected Location location = null;
+    ArrayList<Polyline> polylines = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,14 +86,21 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         // Getting the name of the best provider
         String provider = locationManager.getBestProvider(criteria, true);
         // Getting Current Location From GPS
-        Location location = locationManager.getLastKnownLocation(provider);
-        start = new LatLng(location.getLatitude(), location.getLongitude());
 
-        /*if(location!=null){
+        while (location==null) {
+            locationManager.requestLocationUpdates(provider, 5000, 0, this);
+            location = locationManager.getLastKnownLocation(provider);
+        }
+
+        if(location!=null){
             onLocationChanged(location);
         }
-        locationManager.requestLocationUpdates(provider, 5000, 0, this);*/
+        locationManager.requestLocationUpdates(provider, 5000, 0, this);
+    }
 
+    @Override
+    public void onLocationChanged(Location location) {
+        start = new LatLng(location.getLatitude(), location.getLongitude());
         Routing routing = new Routing.Builder()
                 .travelMode(AbstractRouting.TravelMode.DRIVING)
                 .withListener(this)
@@ -100,17 +109,9 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
                 .build();
         routing.execute();
 
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        /*double lat = location.getLatitude();
-        double lng = location.getLongitude();
-        LatLng point = new LatLng(lat, lng);
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(start));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(16));
-        Log.e("NavigationActivity", "onLocationChanged");*/
+        Log.e("NavigationActivity", "onLocationChanged");
     }
 
     @Override
@@ -148,7 +149,6 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     @Override
     public void onRoutingSuccess(ArrayList<Route> route, int shortestRouteIndex) {
         int[] COLORS = new int[]{R.color.colorPrimary, R.color.colorAccent, R.color.common_plus_signin_btn_text_light, R.color.common_action_bar_splitter};
-        ArrayList<Polyline> polylines = new ArrayList<>();
         //progressDialog.dismiss();
         //CameraUpdate center = CameraUpdateFactory.newLatLng(start);
         //CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
@@ -166,7 +166,8 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
 
         polylines = new ArrayList<>();
         //add route(s) to the map.
-        for (int i = 0; i <route.size(); i++) {
+        for (int i = 0; i <1; i++) {
+        //for (int i = 0; i <route.size(); i++) {
 
             //In case of more than X alternative routes
             int colorIndex = i % COLORS.length;
@@ -178,15 +179,17 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
             Polyline polyline = mMap.addPolyline(polyOptions);
             polylines.add(polyline);
 
-            Toast.makeText(getApplicationContext(),"Route "+ (i+1) +": distance - "+ route.get(i).getDistanceValue()+": duration - "+ route.get(i).getDurationValue(),Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(),"Route "+ (i+1) +": distance - "+ route.get(i).getDistanceValue()+": duration - "+ route.get(i).getDurationValue(),Toast.LENGTH_SHORT).show();
         }
 
         // Start marker
+
         MarkerOptions options = new MarkerOptions();
+        /*
         options.position(start);
         //options.icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue));
         mMap.addMarker(options);
-
+        */
         // End marker
         options = new MarkerOptions();
         options.position(end);

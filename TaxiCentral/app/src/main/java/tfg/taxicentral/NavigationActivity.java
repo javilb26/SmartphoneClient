@@ -160,6 +160,11 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         if (infoRoute != null) {
             infoRouteTextView.setText(infoRoute);
         }
+        float[] results = new float[1];
+        Location.distanceBetween(start.latitude, start.longitude, end.latitude, end.longitude, results);
+        if (results[0]<500) {
+            destinationReachedButton.performClick();
+        }
 
     }
 

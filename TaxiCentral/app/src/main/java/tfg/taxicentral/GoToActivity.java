@@ -17,6 +17,7 @@ import android.widget.Toast;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
@@ -49,6 +50,8 @@ public class GoToActivity extends ActionBarActivity {
     String[] addresses;
     String addressSelected;
 
+    private TakeClientToTask mTakeClientToTask = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +68,8 @@ public class GoToActivity extends ActionBarActivity {
                 try {
                     List<Address> geocodeMatches = new Geocoder(getApplicationContext()).getFromLocationName(url, 1);
                     if ((geocodeMatches==null)||(!geocodeMatches.isEmpty())) {
+                        mTakeClientToTask = new TakeClientToTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), Long.valueOf(1), Long.valueOf(1), Long.valueOf(6), Long.valueOf(6944), Long.valueOf(1676));
+                        mTakeClientToTask.execute((Void) null);
                         Intent intent = new Intent(getApplicationContext(), NavigationActivity.class);
                         intent.putExtra("url", url);
                         intent.putExtra("lat", geocodeMatches.get(0).getLatitude());
@@ -338,6 +343,47 @@ public class GoToActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(final Boolean success) {
             createInstanceArrayAdapterAddresses();
+        }
+
+    }
+
+    public class TakeClientToTask extends AsyncTask<Void, Void, Boolean> {
+
+        private final Long mTaxiId;
+        private final Long mClientId;
+        private final Long mCountryId;
+        private final Long mRegionId;
+        private final Long mCityId;
+        private final Long mAddressId;
+
+        TakeClientToTask(Long taxiId, Long clientId, Long countryId, Long regionId, Long cityId, Long addressId) {
+            mTaxiId = taxiId;
+            mClientId = clientId;
+            mCountryId = countryId;
+            mRegionId = regionId;
+            mCityId = cityId;
+            mAddressId = addressId;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            boolean resul = true;
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpPut put = new HttpPut(getString(R.string.ip)+"taxi/" + mTaxiId + "/client/" + mClientId + "/country/" + mCountryId + "/region/" + mRegionId + "/city/" + mCityId + "/address/" + mAddressId);
+            put.setHeader("content-type", "application/json");
+            try
+            {
+                HttpResponse resp = httpClient.execute(put);
+                String respStr = EntityUtils.toString(resp.getEntity());
+                if(!respStr.equals("true"))
+                    resul = false;
+            }
+            catch(Exception ex)
+            {
+                Log.e("ServicioRest","Error!", ex);
+                resul = false;
+            }
+            return resul;
         }
 
     }

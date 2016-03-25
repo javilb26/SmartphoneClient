@@ -9,6 +9,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -33,6 +34,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +53,8 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     ArrayList<Polyline> polylines = new ArrayList<>();
     TextView infoRouteTextView = null;
     Button futureStateButton = null;
+    private DestinationReachedTask mDestinationReachedTask = null;
+    Button destinationReachedButton = null;
     String infoRouteWithRoutes = null;
     String infoRoute = null;
 
@@ -66,6 +75,19 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
                 Intent intent = new Intent(getApplicationContext(), FutureStateActivity.class);
                 startActivity(intent);
 
+            }
+        });
+        destinationReachedButton = (Button) findViewById(R.id.arrivalButton);
+        destinationReachedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO Recuperar bien los valores
+                mDestinationReachedTask = new DestinationReachedTask(Long.valueOf(1), 300.0);
+                mDestinationReachedTask.execute((Void) null);
+                //TODO Volver con elegancia xD
+                Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }
@@ -229,5 +251,38 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     @Override
     public void onRoutingCancelled() {
         Log.i("", "Routing was cancelled.");
+    }
+
+    public class DestinationReachedTask extends AsyncTask<Void, Void, Boolean> {
+
+        private final Long mFutureTravelId;
+        private final Double mDistance;
+
+        DestinationReachedTask(Long futureTravelId, Double distance) {
+            mFutureTravelId = futureTravelId;
+            mDistance = distance;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            boolean resul = true;
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpPut put = new HttpPut(getString(R.string.ip)+"arrival/" + mFutureTravelId + "/distance/" + mDistance);
+            put.setHeader("content-type", "application/json");
+            try
+            {
+                HttpResponse resp = httpClient.execute(put);
+                String respStr = EntityUtils.toString(resp.getEntity());
+                if(!respStr.equals("true"))
+                    resul = false;
+            }
+            catch(Exception ex)
+            {
+                Log.e("ServicioRest","Error!", ex);
+                resul = false;
+            }
+            return resul;
+        }
+
     }
 }

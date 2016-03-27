@@ -188,7 +188,7 @@ public class LoginActivity extends ActionBarActivity {
         protected Boolean doInBackground(Void... params) {
             boolean resul = true;
             HttpClient httpClient = new DefaultHttpClient();
-            HttpPost post = new HttpPost(getString(R.string.ip)+"login/");
+            HttpPost post = new HttpPost(getString(R.string.ip)+"login");
 
             post.setHeader("content-type", "application/json");
             try

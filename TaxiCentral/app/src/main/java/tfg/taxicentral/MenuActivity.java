@@ -26,7 +26,7 @@ public class MenuActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         String item = (String) getListAdapter().getItem(position);
-        Toast.makeText(this, item + " selected", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, item + " selected", Toast.LENGTH_LONG).show();
         Intent intent = null;
         switch(item) {
             case "Go to":

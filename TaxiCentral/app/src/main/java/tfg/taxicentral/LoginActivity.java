@@ -204,7 +204,7 @@ public class LoginActivity extends ActionBarActivity {
                     resul = false;
                 SharedPreferences.Editor editorSharedPreferences = getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).edit();
                 //if (chkGuardar.isChecked()) {
-                    editorSharedPreferences.clear();
+                    //editorSharedPreferences.clear();
                     editorSharedPreferences.putLong("taxiId", mTaxiId);
                     editorSharedPreferences.putString("password", mPassword);
                     editorSharedPreferences.commit();

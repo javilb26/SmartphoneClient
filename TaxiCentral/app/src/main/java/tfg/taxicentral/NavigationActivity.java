@@ -82,7 +82,7 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
             @Override
             public void onClick(View view) {
                 //TODO Recuperar bien los valores
-                mDestinationReachedTask = new DestinationReachedTask(Long.valueOf(1), 300.0);
+                mDestinationReachedTask = new DestinationReachedTask(Long.valueOf(1), 300.0, 43.3415225, -8.4477031, 43.3415225, -8.4477031, "ds");
                 mDestinationReachedTask.execute((Void) null);
                 //TODO Volver con elegancia xD
                 Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
@@ -263,17 +263,27 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
 
         private final Long mFutureTravelId;
         private final Double mDistance;
+        private final Double mOX;
+        private final Double mOY;
+        private final Double mDX;
+        private final Double mDY;
+        private final String mPath;
 
-        DestinationReachedTask(Long futureTravelId, Double distance) {
+        DestinationReachedTask(Long futureTravelId, Double distance, Double oX, Double oY, Double dX, Double dY, String path) {
             mFutureTravelId = futureTravelId;
             mDistance = distance;
+            mOX = oX;
+            mOY = oY;
+            mDX = dX;
+            mDY = dY;
+            mPath = path;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             boolean resul = true;
             HttpClient httpClient = new DefaultHttpClient();
-            HttpPut put = new HttpPut(getString(R.string.ip)+"arrival/" + mFutureTravelId + "/distance/" + mDistance);
+            HttpPut put = new HttpPut(getString(R.string.ip)+"arrival/" + mFutureTravelId + "/distance/" + mDistance + "/originpoint/" + mOX + "/" + mOY + "/destinationpoint/" + mDX + "/" + mDY + "/path/" + mPath);
             put.setHeader("content-type", "application/json");
             try
             {

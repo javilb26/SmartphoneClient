@@ -68,6 +68,7 @@ public class GoToActivity extends ActionBarActivity {
                 try {
                     List<Address> geocodeMatches = new Geocoder(getApplicationContext()).getFromLocationName(url, 1);
                     if ((geocodeMatches==null)||(!geocodeMatches.isEmpty())) {
+                        //TODO ARREGLAR ESTO YA
                         mTakeClientToTask = new TakeClientToTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), Long.valueOf(1), Long.valueOf(1), Long.valueOf(6), Long.valueOf(6944), Long.valueOf(1676));
                         mTakeClientToTask.execute((Void) null);
                         Intent intent = new Intent(getApplicationContext(), NavigationActivity.class);

@@ -261,7 +261,7 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
 
     public class DestinationReachedTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final Long mFutureTravelId;
+        private final Long mTravelId;
         private final Double mDistance;
         private final Double mOX;
         private final Double mOY;
@@ -269,8 +269,8 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         private final Double mDY;
         private final String mPath;
 
-        DestinationReachedTask(Long futureTravelId, Double distance, Double oX, Double oY, Double dX, Double dY, String path) {
-            mFutureTravelId = futureTravelId;
+        DestinationReachedTask(Long travelId, Double distance, Double oX, Double oY, Double dX, Double dY, String path) {
+            mTravelId = travelId;
             mDistance = distance;
             mOX = oX;
             mOY = oY;
@@ -283,7 +283,7 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         protected Boolean doInBackground(Void... params) {
             boolean resul = true;
             HttpClient httpClient = new DefaultHttpClient();
-            HttpPut put = new HttpPut(getString(R.string.ip)+"arrival/" + mFutureTravelId + "/distance/" + mDistance + "/originpoint/" + mOX + "/" + mOY + "/destinationpoint/" + mDX + "/" + mDY + "/path/" + mPath);
+            HttpPut put = new HttpPut(getString(R.string.ip)+"arrival/" + mTravelId + "/distance/" + mDistance + "/originpoint/" + mOX + "/" + mOY + "/destinationpoint/" + mDX + "/" + mDY + "/path/" + mPath);
             put.setHeader("content-type", "application/json");
             try
             {

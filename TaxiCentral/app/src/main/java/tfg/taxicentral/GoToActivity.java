@@ -89,9 +89,9 @@ public class GoToActivity extends ActionBarActivity {
         return placesString;
     }
 
-    public void createInstanceArrayAdapterCountries() {
+    public void createInstanceArrayAdapterCountries(final HashMap<String, Long> places) {
         ArrayAdapter<String> adapterC = new ArrayAdapter<>
-                (this, android.R.layout.select_dialog_item, iterator(countries));
+                (this, android.R.layout.select_dialog_item, iterator(places));
 
         //Getting the instance of AutoCompleteTextView
         AutoCompleteTextView actvC = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewCountries);
@@ -101,18 +101,18 @@ public class GoToActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 countryStrSelected = (String) parent.getItemAtPosition(position);
-                countryIdSelected = countries.get(countryStrSelected);
-                Log.e("countryId: ", countries.get(countryStrSelected).toString());
-                mGetRegionsTask = new GetRegionsTask(countries.get(countryStrSelected));
+                countryIdSelected = places.get(countryStrSelected);
+                Log.e("countryId: ", places.get(countryStrSelected).toString());
+                mGetRegionsTask = new GetRegionsTask(places.get(countryStrSelected));
                 mGetRegionsTask.execute((Void) null);
             }
         });
 
     }
 
-    public void createInstanceArrayAdapterRegions() {
+    public void createInstanceArrayAdapterRegions(final HashMap<String, Long> places) {
         ArrayAdapter<String> adapterR = new ArrayAdapter<>
-                (this, android.R.layout.select_dialog_item, iterator(regions));
+                (this, android.R.layout.select_dialog_item, iterator(places));
 
         //Getting the instance of AutoCompleteTextView
         AutoCompleteTextView actvR = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewRegions);
@@ -122,17 +122,17 @@ public class GoToActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 regionStrSelected = (String) parent.getItemAtPosition(position);
-                regionIdSelected = regions.get(regionStrSelected);
-                Log.e("regionId: ", regions.get(regionStrSelected).toString());
-                mGetCitiesTask = new GetCitiesTask(regions.get(regionStrSelected));
+                regionIdSelected = places.get(regionStrSelected);
+                Log.e("regionId: ", places.get(regionStrSelected).toString());
+                mGetCitiesTask = new GetCitiesTask(places.get(regionStrSelected));
                 mGetCitiesTask.execute((Void) null);
             }
         });
     }
 
-    public void createInstanceArrayAdapterCities() {
+    public void createInstanceArrayAdapterCities(final HashMap<String, Long> places) {
         ArrayAdapter<String> adapterCi = new ArrayAdapter<>
-                (this, android.R.layout.select_dialog_item, iterator(cities));
+                (this, android.R.layout.select_dialog_item, iterator(places));
 
         //Getting the instance of AutoCompleteTextView
         AutoCompleteTextView actvCi = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewCities);
@@ -142,17 +142,17 @@ public class GoToActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 cityStrSelected = (String) parent.getItemAtPosition(position);
-                cityIdSelected = cities.get(cityStrSelected);
-                Log.e("cityId: ", cities.get(cityStrSelected).toString());
-                mGetAddressesTask = new GetAddressesTask(cities.get(cityStrSelected));
+                cityIdSelected = places.get(cityStrSelected);
+                Log.e("cityId: ", places.get(cityStrSelected).toString());
+                mGetAddressesTask = new GetAddressesTask(places.get(cityStrSelected));
                 mGetAddressesTask.execute((Void) null);
             }
         });
     }
 
-    public void createInstanceArrayAdapterAddresses() {
+    public void createInstanceArrayAdapterAddresses(final HashMap<String, Long> places) {
         ArrayAdapter<String> adapterA = new ArrayAdapter<>
-                (this, android.R.layout.select_dialog_item, iterator(addresses));
+                (this, android.R.layout.select_dialog_item, iterator(places));
 
         //Getting the instance of AutoCompleteTextView
         AutoCompleteTextView actvA = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewAddresses);
@@ -162,7 +162,7 @@ public class GoToActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 addressStrSelected = (String) parent.getItemAtPosition(position);
-                addressIdSelected = addresses.get(addressStrSelected);
+                addressIdSelected = places.get(addressStrSelected);
             }
         });
     }
@@ -194,7 +194,7 @@ public class GoToActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            createInstanceArrayAdapterCountries();
+            createInstanceArrayAdapterCountries(countries);
         }
 
     }
@@ -229,7 +229,7 @@ public class GoToActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            createInstanceArrayAdapterRegions();
+            createInstanceArrayAdapterRegions(regions);
         }
 
     }
@@ -264,7 +264,7 @@ public class GoToActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            createInstanceArrayAdapterCities();
+            createInstanceArrayAdapterCities(cities);
         }
 
     }
@@ -299,7 +299,7 @@ public class GoToActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            createInstanceArrayAdapterAddresses();
+            createInstanceArrayAdapterAddresses(addresses);
         }
 
     }

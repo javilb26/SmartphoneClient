@@ -34,14 +34,14 @@ public class GoToActivity extends ActionBarActivity {
 
     private int flag = 25;
     private String[] placesString;
-    private String[] placesStrSelected;
+    private String[] placesStrSelected = new String[4];
+    private Long[] placesIdSelected = new Long[4];
     private GetCountriesTask mGetCountriesTask = null;
     private GetRegionsTask mGetRegionsTask = null;
     private GetCitiesTask mGetCitiesTask = null;
     private GetAddressesTask mGetAddressesTask = null;
     private TakeClientToTask mTakeClientToTask = null;
     private HashMap<String, Long> countries = new HashMap<>(), regions = new HashMap<>(), cities = new HashMap<>(), addresses = new HashMap<>();
-    private Long countryIdSelected, regionIdSelected, cityIdSelected, addressIdSelected;
     private Long clientId = (long) 0;
     private Long travelId = (long) 0;
 
@@ -59,7 +59,7 @@ public class GoToActivity extends ActionBarActivity {
             public void onClick(View view) {
                 String url = placesStrSelected[3] + ", " + placesStrSelected[2] + ", " + placesStrSelected[1] + ", " + placesStrSelected[0];
                 //TODO Cuidado con los tiempos, puede que se ejecute el travelId antes que la creacion del travel -> asegurarse
-                mTakeClientToTask = new TakeClientToTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), clientId, countryIdSelected, regionIdSelected, cityIdSelected, addressIdSelected);
+                mTakeClientToTask = new TakeClientToTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), clientId, placesIdSelected[0], placesIdSelected[1], placesIdSelected[2], placesIdSelected[3]);
                 mTakeClientToTask.execute((Void) null);
                 try {
                     List<Address> geocodeMatches = new Geocoder(getApplicationContext()).getFromLocationName(url, 1);
@@ -92,7 +92,6 @@ public class GoToActivity extends ActionBarActivity {
     }
 
     public void createInstanceArrayAdapter(final HashMap<String, Long> places, int autoCompleteTextView) {
-        placesStrSelected = new String[4];
         ArrayAdapter<String> adapterC = new ArrayAdapter<>
                 (this, android.R.layout.select_dialog_item, iterator(places));
 
@@ -105,7 +104,7 @@ public class GoToActivity extends ActionBarActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     placesStrSelected[0] = (String) parent.getItemAtPosition(position);
-                    countryIdSelected = places.get(placesStrSelected[0]);
+                    placesIdSelected[0] = places.get(placesStrSelected[0]);
                     Log.e("countryId: ", places.get(placesStrSelected[0]).toString());
                     mGetRegionsTask = new GetRegionsTask(places.get(placesStrSelected[0]));
                     mGetRegionsTask.execute((Void) null);
@@ -117,7 +116,7 @@ public class GoToActivity extends ActionBarActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     placesStrSelected[1] = (String) parent.getItemAtPosition(position);
-                    regionIdSelected = places.get(placesStrSelected[1]);
+                    placesIdSelected[1] = places.get(placesStrSelected[1]);
                     Log.e("regionId: ", places.get(placesStrSelected[1]).toString());
                     mGetCitiesTask = new GetCitiesTask(places.get(placesStrSelected[1]));
                     mGetCitiesTask.execute((Void) null);
@@ -129,7 +128,7 @@ public class GoToActivity extends ActionBarActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     placesStrSelected[2] = (String) parent.getItemAtPosition(position);
-                    cityIdSelected = places.get(placesStrSelected[2]);
+                    placesIdSelected[2] = places.get(placesStrSelected[2]);
                     Log.e("cityId: ", places.get(placesStrSelected[2]).toString());
                     mGetAddressesTask = new GetAddressesTask(places.get(placesStrSelected[2]));
                     mGetAddressesTask.execute((Void) null);
@@ -141,7 +140,7 @@ public class GoToActivity extends ActionBarActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     placesStrSelected[3] = (String) parent.getItemAtPosition(position);
-                    addressIdSelected = places.get(placesStrSelected[3]);
+                    placesIdSelected[3] = places.get(placesStrSelected[3]);
                 }
             });
         }

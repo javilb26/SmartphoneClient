@@ -32,25 +32,32 @@ import java.util.Map;
 public class GoToActivity extends ActionBarActivity {
 
     private GetCountriesTask mGetCountriesTask = null;
-    String[] countriesString;
-    HashMap<String, Long> countries = new HashMap<>();
-    String countrySelected;
+    private String[] countriesString;
+    private HashMap<String, Long> countries = new HashMap<>();
+    private String countryStrSelected;
+    private Long countryIdSelected;
 
     private GetRegionsTask mGetRegionsTask = null;
-    String[] regionsString = null;
-    HashMap<String, Long> regions = new HashMap<>();
-    String regionSelected;
+    private String[] regionsString = null;
+    private HashMap<String, Long> regions = new HashMap<>();
+    private String regionStrSelected;
+    private Long regionIdSelected;
 
     private GetCitiesTask mGetCitiesTask = null;
-    String[] citiesString;
-    HashMap<String, Long> cities = new HashMap<>();
-    String citySelected;
+    private String[] citiesString;
+    private HashMap<String, Long> cities = new HashMap<>();
+    private String cityStrSelected;
+    private Long cityIdSelected;
 
     private GetAddressesTask mGetAddressesTask = null;
-    String[] addresses;
-    String addressSelected;
+    private String[] addressesString;
+    private HashMap<String, Long> addresses = new HashMap<>();
+    private String addressStrSelected;
+    private Long addressIdSelected;
 
     private TakeClientToTask mTakeClientToTask = null;
+    private Long clientId = (long) 0;
+    private Long travelId = (long) 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,17 +71,23 @@ public class GoToActivity extends ActionBarActivity {
         mGoToButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String url = addressSelected + ", " + citySelected + ", " + regionSelected + ", " + countrySelected;
+                String url = addressStrSelected + ", " + cityStrSelected + ", " + regionStrSelected + ", " + countryStrSelected;
+                //TODO Cuidado con los tiempos, puede que se ejecute el travelId antes que la creacion del travel -> asegurarse
+                mTakeClientToTask = new TakeClientToTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), (long) clientId, countryIdSelected, regionIdSelected, cityIdSelected, addressIdSelected);
+                mTakeClientToTask.execute((Void) null);
                 try {
                     List<Address> geocodeMatches = new Geocoder(getApplicationContext()).getFromLocationName(url, 1);
                     if ((geocodeMatches==null)||(!geocodeMatches.isEmpty())) {
-                        //TODO ARREGLAR ESTO YA
-                        mTakeClientToTask = new TakeClientToTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), Long.valueOf(1), Long.valueOf(1), Long.valueOf(6), Long.valueOf(6944), Long.valueOf(1676));
-                        mTakeClientToTask.execute((Void) null);
                         Intent intent = new Intent(getApplicationContext(), NavigationActivity.class);
                         intent.putExtra("url", url);
-                        intent.putExtra("lat", geocodeMatches.get(0).getLatitude());
-                        intent.putExtra("lng", geocodeMatches.get(0).getLongitude());
+                        //TODO No debiera hacer falta el if
+                        if (geocodeMatches != null) {
+                            intent.putExtra("lat", geocodeMatches.get(0).getLatitude());
+                            intent.putExtra("lng", geocodeMatches.get(0).getLongitude());
+                        }
+                        Log.e("AAAA","AAAAA");
+                        Log.e("GoToActivity: ", "travelId: "+travelId);
+                        intent.putExtra("travelId", travelId);
                         startActivity(intent);
                     } else {
                         Toast.makeText(getApplicationContext(), "Destino no encontrado", Toast.LENGTH_SHORT).show();
@@ -107,9 +120,10 @@ public class GoToActivity extends ActionBarActivity {
         actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                countrySelected = (String) parent.getItemAtPosition(position);
-                Log.e("countryId: ",countries.get(countrySelected).toString());
-                mGetRegionsTask = new GetRegionsTask(countries.get(countrySelected));
+                countryStrSelected = (String) parent.getItemAtPosition(position);
+                countryIdSelected = countries.get(countryStrSelected);
+                Log.e("countryId: ",countries.get(countryStrSelected).toString());
+                mGetRegionsTask = new GetRegionsTask(countries.get(countryStrSelected));
                 mGetRegionsTask.execute((Void) null);
             }
         });
@@ -137,9 +151,10 @@ public class GoToActivity extends ActionBarActivity {
         actvR.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                regionSelected = (String) parent.getItemAtPosition(position);
-                Log.e("regionId: ",regions.get(regionSelected).toString());
-                mGetCitiesTask = new GetCitiesTask(regions.get(regionSelected));
+                regionStrSelected = (String) parent.getItemAtPosition(position);
+                regionIdSelected = regions.get(regionStrSelected);
+                Log.e("regionId: ",regions.get(regionStrSelected).toString());
+                mGetCitiesTask = new GetCitiesTask(regions.get(regionStrSelected));
                 mGetCitiesTask.execute((Void) null);
             }
         });
@@ -166,18 +181,28 @@ public class GoToActivity extends ActionBarActivity {
         actvCi.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                citySelected = (String) parent.getItemAtPosition(position);
-                Log.e("cityId: ",cities.get(citySelected).toString());
-                mGetAddressesTask = new GetAddressesTask(cities.get(citySelected));
+                cityStrSelected = (String) parent.getItemAtPosition(position);
+                cityIdSelected = cities.get(cityStrSelected);
+                Log.e("cityId: ",cities.get(cityStrSelected).toString());
+                mGetAddressesTask = new GetAddressesTask(cities.get(cityStrSelected));
                 mGetAddressesTask.execute((Void) null);
             }
         });
     }
 
     public void createInstanceArrayAdapterAddresses() {
+
+        Iterator it = addresses.entrySet().iterator();
+        int i=0;
+        while (it.hasNext()) {
+            Map.Entry e = (Map.Entry) it.next();
+            addressesString[i] = e.getKey().toString();
+            i+=1;
+        }
+
         //Creating the instance of ArrayAdapter containing list of language names
         ArrayAdapter<String> adapterA = new ArrayAdapter<>
-                (this,android.R.layout.select_dialog_item, addresses);
+                (this,android.R.layout.select_dialog_item, addressesString);
 
         //Getting the instance of AutoCompleteTextView
         AutoCompleteTextView actvA = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextViewAddresses);
@@ -186,7 +211,8 @@ public class GoToActivity extends ActionBarActivity {
         actvA.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                addressSelected = (String) parent.getItemAtPosition(position);
+                addressStrSelected = (String) parent.getItemAtPosition(position);
+                addressIdSelected = addresses.get(addressStrSelected);
             }
         });
     }
@@ -327,11 +353,12 @@ public class GoToActivity extends ActionBarActivity {
                 HttpResponse resp = httpClient.execute(get);
                 String respStr = EntityUtils.toString(resp.getEntity());
                 JSONArray respJSON = new JSONArray(respStr);
-                addresses = new String[respJSON.length()];
+                addressesString = new String[respJSON.length()];
                 for(int i=0; i<respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
+                    Long addressId = (long) obj.getInt("addressId");
                     String name = obj.getString("name");
-                    addresses[i] = name;
+                    addresses.put(name, addressId);
                 }
             }
             catch(Exception ex) {
@@ -376,8 +403,22 @@ public class GoToActivity extends ActionBarActivity {
             {
                 HttpResponse resp = httpClient.execute(put);
                 String respStr = EntityUtils.toString(resp.getEntity());
+                Log.e("GoToActivity: ", "respStr: "+respStr);
                 if(!respStr.equals("true"))
                     resul = false;
+                travelId = Long.valueOf(respStr);
+                Log.e("GoToActivity: ", "DespuesRespStr: "+travelId);
+/*
+                HttpResponse resp = httpClient.execute(get);
+                String respStr = EntityUtils.toString(resp.getEntity());
+                JSONArray respJSON = new JSONArray(respStr);
+                addressesString = new String[respJSON.length()];
+                for(int i=0; i<respJSON.length(); i++) {
+                    JSONObject obj = respJSON.getJSONObject(i);
+                    Long addressId = (long) obj.getInt("addressId");
+                    String name = obj.getString("name");
+                    addresses.put(name, addressId);
+*/
             }
             catch(Exception ex)
             {

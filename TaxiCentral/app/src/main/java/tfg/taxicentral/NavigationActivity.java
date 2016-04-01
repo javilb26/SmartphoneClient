@@ -82,7 +82,8 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
             @Override
             public void onClick(View view) {
                 //TODO Recuperar bien los valores
-                mDestinationReachedTask = new DestinationReachedTask(Long.valueOf(1), 300.0, 43.3415225, -8.4477031, 43.3415225, -8.4477031, "ds");
+                Log.e("NavigationActivity: ", "travelId: "+getIntent().getLongExtra("travelId", 0));
+                mDestinationReachedTask = new DestinationReachedTask(getIntent().getLongExtra("travelId", 0), 300.0, 43.3415225, -8.4477031, 43.3415225, -8.4477031, "ds");
                 mDestinationReachedTask.execute((Void) null);
                 //TODO Volver con elegancia xD
                 Intent intent = new Intent(getApplicationContext(), MenuActivity.class);

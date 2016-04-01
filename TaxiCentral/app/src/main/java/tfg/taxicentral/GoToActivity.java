@@ -89,12 +89,12 @@ public class GoToActivity extends ActionBarActivity {
         return placesString;
     }
 
-    public void createInstanceArrayAdapterCountries(final HashMap<String, Long> places) {
+    public void createInstanceArrayAdapterCountries(final HashMap<String, Long> places, int autoCompleteTextView) {
         ArrayAdapter<String> adapterC = new ArrayAdapter<>
                 (this, android.R.layout.select_dialog_item, iterator(places));
 
         //Getting the instance of AutoCompleteTextView
-        AutoCompleteTextView actvC = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewCountries);
+        AutoCompleteTextView actvC = (AutoCompleteTextView) findViewById(autoCompleteTextView);
         actvC.setThreshold(1);//will start working from first character
         actvC.setAdapter(adapterC);//setting the adapter data into the AutoCompleteTextView
         actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -110,12 +110,12 @@ public class GoToActivity extends ActionBarActivity {
 
     }
 
-    public void createInstanceArrayAdapterRegions(final HashMap<String, Long> places) {
+    public void createInstanceArrayAdapterRegions(final HashMap<String, Long> places, int autoCompleteTextView) {
         ArrayAdapter<String> adapterR = new ArrayAdapter<>
                 (this, android.R.layout.select_dialog_item, iterator(places));
 
         //Getting the instance of AutoCompleteTextView
-        AutoCompleteTextView actvR = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewRegions);
+        AutoCompleteTextView actvR = (AutoCompleteTextView) findViewById(autoCompleteTextView);
         actvR.setThreshold(1);//will start working from first character
         actvR.setAdapter(adapterR);//setting the adapter data into the AutoCompleteTextView
         actvR.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -130,12 +130,12 @@ public class GoToActivity extends ActionBarActivity {
         });
     }
 
-    public void createInstanceArrayAdapterCities(final HashMap<String, Long> places) {
+    public void createInstanceArrayAdapterCities(final HashMap<String, Long> places, int autoCompleteTextView) {
         ArrayAdapter<String> adapterCi = new ArrayAdapter<>
                 (this, android.R.layout.select_dialog_item, iterator(places));
 
         //Getting the instance of AutoCompleteTextView
-        AutoCompleteTextView actvCi = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewCities);
+        AutoCompleteTextView actvCi = (AutoCompleteTextView) findViewById(autoCompleteTextView);
         actvCi.setThreshold(1);//will start working from first character
         actvCi.setAdapter(adapterCi);//setting the adapter data into the AutoCompleteTextView
         actvCi.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -150,12 +150,12 @@ public class GoToActivity extends ActionBarActivity {
         });
     }
 
-    public void createInstanceArrayAdapterAddresses(final HashMap<String, Long> places) {
+    public void createInstanceArrayAdapterAddresses(final HashMap<String, Long> places, int autoCompleteTextView) {
         ArrayAdapter<String> adapterA = new ArrayAdapter<>
                 (this, android.R.layout.select_dialog_item, iterator(places));
 
         //Getting the instance of AutoCompleteTextView
-        AutoCompleteTextView actvA = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewAddresses);
+        AutoCompleteTextView actvA = (AutoCompleteTextView) findViewById(autoCompleteTextView);
         actvA.setThreshold(1);//will start working from first character
         actvA.setAdapter(adapterA);//setting the adapter data into the AutoCompleteTextView
         actvA.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -194,7 +194,7 @@ public class GoToActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            createInstanceArrayAdapterCountries(countries);
+            createInstanceArrayAdapterCountries(countries, R.id.autoCompleteTextViewCountries);
         }
 
     }
@@ -229,7 +229,7 @@ public class GoToActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            createInstanceArrayAdapterRegions(regions);
+            createInstanceArrayAdapterRegions(regions, R.id.autoCompleteTextViewRegions);
         }
 
     }
@@ -264,7 +264,7 @@ public class GoToActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            createInstanceArrayAdapterCities(cities);
+            createInstanceArrayAdapterCities(cities, R.id.autoCompleteTextViewCities);
         }
 
     }
@@ -299,7 +299,7 @@ public class GoToActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            createInstanceArrayAdapterAddresses(addresses);
+            createInstanceArrayAdapterAddresses(addresses, R.id.autoCompleteTextViewAddresses);
         }
 
     }

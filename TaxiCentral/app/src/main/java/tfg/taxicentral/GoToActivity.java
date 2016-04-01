@@ -32,7 +32,7 @@ import java.util.Map;
 public class GoToActivity extends ActionBarActivity {
 
     private GetCountriesTask mGetCountriesTask = null;
-    private String[] countriesString;
+    private String[] placesString;
     private HashMap<String, Long> countries = new HashMap<>();
     private String countryStrSelected;
     private Long countryIdSelected;
@@ -80,13 +80,8 @@ public class GoToActivity extends ActionBarActivity {
                     if ((geocodeMatches==null)||(!geocodeMatches.isEmpty())) {
                         Intent intent = new Intent(getApplicationContext(), NavigationActivity.class);
                         intent.putExtra("url", url);
-                        //TODO No debiera hacer falta el if
-                        if (geocodeMatches != null) {
-                            intent.putExtra("lat", geocodeMatches.get(0).getLatitude());
-                            intent.putExtra("lng", geocodeMatches.get(0).getLongitude());
-                        }
-                        Log.e("AAAA","AAAAA");
-                        Log.e("GoToActivity: ", "travelId: "+travelId);
+                        intent.putExtra("lat", geocodeMatches.get(0).getLatitude());
+                        intent.putExtra("lng", geocodeMatches.get(0).getLongitude());
                         intent.putExtra("travelId", travelId);
                         startActivity(intent);
                     } else {
@@ -99,19 +94,20 @@ public class GoToActivity extends ActionBarActivity {
         });
     }
 
-    public void createInstanceArrayAdapterCountries() {
-
-        Iterator it = countries.entrySet().iterator();
+    private String[] iterator (HashMap places) {
+        Iterator it = places.entrySet().iterator();
         int i=0;
         while (it.hasNext()) {
             Map.Entry e = (Map.Entry) it.next();
-            countriesString[i] = e.getKey().toString();
+            placesString[i] = e.getKey().toString();
             i+=1;
         }
+        return placesString;
+    }
 
-        //Creating the instance of ArrayAdapter containing list of language names
+    public void createInstanceArrayAdapterCountries() {
         ArrayAdapter<String> adapterC = new ArrayAdapter<>
-                (this,android.R.layout.select_dialog_item, countriesString);
+                (this,android.R.layout.select_dialog_item, iterator(countries));
 
         //Getting the instance of AutoCompleteTextView
         AutoCompleteTextView actvC = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextViewCountries);
@@ -131,18 +127,8 @@ public class GoToActivity extends ActionBarActivity {
     }
 
     public void createInstanceArrayAdapterRegions() {
-
-        Iterator it = regions.entrySet().iterator();
-        int i=0;
-        while (it.hasNext()) {
-            Map.Entry e = (Map.Entry) it.next();
-            regionsString[i] = e.getKey().toString();
-            i+=1;
-        }
-
-        //Creating the instance of ArrayAdapter containing list of language names
         ArrayAdapter<String> adapterR = new ArrayAdapter<>
-                (this,android.R.layout.select_dialog_item, regionsString);
+                (this,android.R.layout.select_dialog_item, iterator(regions));
 
         //Getting the instance of AutoCompleteTextView
         AutoCompleteTextView actvR = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextViewRegions);
@@ -161,18 +147,8 @@ public class GoToActivity extends ActionBarActivity {
     }
 
     public void createInstanceArrayAdapterCities() {
-
-        Iterator it = cities.entrySet().iterator();
-        int i=0;
-        while (it.hasNext()) {
-            Map.Entry e = (Map.Entry) it.next();
-            citiesString[i] = e.getKey().toString();
-            i+=1;
-        }
-
-        //Creating the instance of ArrayAdapter containing list of language names
         ArrayAdapter<String> adapterCi = new ArrayAdapter<>
-                (this,android.R.layout.select_dialog_item, citiesString);
+                (this,android.R.layout.select_dialog_item, iterator(cities));
 
         //Getting the instance of AutoCompleteTextView
         AutoCompleteTextView actvCi = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextViewCities);
@@ -191,18 +167,8 @@ public class GoToActivity extends ActionBarActivity {
     }
 
     public void createInstanceArrayAdapterAddresses() {
-
-        Iterator it = addresses.entrySet().iterator();
-        int i=0;
-        while (it.hasNext()) {
-            Map.Entry e = (Map.Entry) it.next();
-            addressesString[i] = e.getKey().toString();
-            i+=1;
-        }
-
-        //Creating the instance of ArrayAdapter containing list of language names
         ArrayAdapter<String> adapterA = new ArrayAdapter<>
-                (this,android.R.layout.select_dialog_item, addressesString);
+                (this,android.R.layout.select_dialog_item, iterator(addresses));
 
         //Getting the instance of AutoCompleteTextView
         AutoCompleteTextView actvA = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextViewAddresses);
@@ -232,7 +198,7 @@ public class GoToActivity extends ActionBarActivity {
                 HttpResponse resp = httpClient.execute(get);
                 String respStr = EntityUtils.toString(resp.getEntity());
                 JSONArray respJSON = new JSONArray(respStr);
-                countriesString = new String[respJSON.length()];
+                placesString = new String[respJSON.length()];
                 for(int i=0; i<respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
                     Long countryId = (long) obj.getInt("countryId");
@@ -272,7 +238,7 @@ public class GoToActivity extends ActionBarActivity {
                 HttpResponse resp = httpClient.execute(get);
                 String respStr = EntityUtils.toString(resp.getEntity());
                 JSONArray respJSON = new JSONArray(respStr);
-                regionsString = new String[respJSON.length()];
+                placesString = new String[respJSON.length()];
                 for(int i=0; i<respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
                     Long regionId = (long) obj.getInt("regionId");
@@ -313,7 +279,7 @@ public class GoToActivity extends ActionBarActivity {
                 HttpResponse resp = httpClient.execute(get);
                 String respStr = EntityUtils.toString(resp.getEntity());
                 JSONArray respJSON = new JSONArray(respStr);
-                citiesString = new String[respJSON.length()];
+                placesString = new String[respJSON.length()];
                 for(int i=0; i<respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
                     Long cityId = (long) obj.getInt("cityId");
@@ -353,7 +319,7 @@ public class GoToActivity extends ActionBarActivity {
                 HttpResponse resp = httpClient.execute(get);
                 String respStr = EntityUtils.toString(resp.getEntity());
                 JSONArray respJSON = new JSONArray(respStr);
-                addressesString = new String[respJSON.length()];
+                placesString = new String[respJSON.length()];
                 for(int i=0; i<respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
                     Long addressId = (long) obj.getInt("addressId");
@@ -395,7 +361,6 @@ public class GoToActivity extends ActionBarActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            boolean resul = true;
             HttpClient httpClient = new DefaultHttpClient();
             HttpPut put = new HttpPut(getString(R.string.ip)+"taxi/" + mTaxiId + "/client/" + mClientId + "/country/" + mCountryId + "/region/" + mRegionId + "/city/" + mCityId + "/address/" + mAddressId);
             put.setHeader("content-type", "application/json");
@@ -403,29 +368,16 @@ public class GoToActivity extends ActionBarActivity {
             {
                 HttpResponse resp = httpClient.execute(put);
                 String respStr = EntityUtils.toString(resp.getEntity());
-                Log.e("GoToActivity: ", "respStr: "+respStr);
                 if(!respStr.equals("true"))
-                    resul = false;
+                    return false;
                 travelId = Long.valueOf(respStr);
-                Log.e("GoToActivity: ", "DespuesRespStr: "+travelId);
-/*
-                HttpResponse resp = httpClient.execute(get);
-                String respStr = EntityUtils.toString(resp.getEntity());
-                JSONArray respJSON = new JSONArray(respStr);
-                addressesString = new String[respJSON.length()];
-                for(int i=0; i<respJSON.length(); i++) {
-                    JSONObject obj = respJSON.getJSONObject(i);
-                    Long addressId = (long) obj.getInt("addressId");
-                    String name = obj.getString("name");
-                    addresses.put(name, addressId);
-*/
             }
             catch(Exception ex)
             {
                 Log.e("ServicioRest","Error!", ex);
-                resul = false;
+                return false;
             }
-            return resul;
+            return true;
         }
 
     }

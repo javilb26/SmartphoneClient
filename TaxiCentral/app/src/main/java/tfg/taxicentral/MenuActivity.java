@@ -13,22 +13,17 @@ public class MenuActivity extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_menu);
-
-        String[] values = new String[] { "Go to", "Actual state", "Plan future travel",
-                "Planned travels", "Cancel current travel", "History", "View taxi stands" };
-
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, values);
+                android.R.layout.simple_list_item_1, new String[]{"Go to", "Actual state", "Plan future travel",
+                "Planned travels", "Cancel current travel", "History", "View taxi stands"});
         setListAdapter(adapter);
     }
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         String item = (String) getListAdapter().getItem(position);
-        //Toast.makeText(this, item + " selected", Toast.LENGTH_LONG).show();
         Intent intent = null;
-        switch(item) {
+        switch (item) {
             case "Go to":
                 intent = new Intent(getApplicationContext(), GoToActivity.class);
                 break;

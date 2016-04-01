@@ -21,12 +21,8 @@ public class FutureStateActivity extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_menu);
-
-        String[] values = new String[] { "Available", "Busy", "Off" };
-
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, values);
+                android.R.layout.simple_list_item_1, new String[]{"Off", "Available", "Busy"});
         setListAdapter(adapter);
     }
 
@@ -41,10 +37,6 @@ public class FutureStateActivity extends ListActivity {
         super.finish();
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
     public class FutureStateTask extends AsyncTask<Void, Void, Boolean> {
 
         private final Long mTaxiId;
@@ -57,23 +49,18 @@ public class FutureStateActivity extends ListActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            boolean resul = true;
-            HttpClient httpClient = new DefaultHttpClient();
-            HttpPut put = new HttpPut(getString(R.string.ip)+"taxi/" + mTaxiId + "/futurestate/" + mState);
+            HttpPut put = new HttpPut(getString(R.string.ip) + "taxi/" + mTaxiId + "/futurestate/" + mState);
             put.setHeader("content-type", "application/json");
-            try
-            {
-                HttpResponse resp = httpClient.execute(put);
+            try {
+                HttpResponse resp = new DefaultHttpClient().execute(put);
                 String respStr = EntityUtils.toString(resp.getEntity());
-                if(!respStr.equals("true"))
-                    resul = false;
+                if (!respStr.equals("true"))
+                    return false;
+            } catch (Exception ex) {
+                Log.e("ServicioRest", "Error!", ex);
+                return false;
             }
-            catch(Exception ex)
-            {
-                Log.e("ServicioRest","Error!", ex);
-                resul = false;
-            }
-            return resul;
+            return true;
         }
 
     }

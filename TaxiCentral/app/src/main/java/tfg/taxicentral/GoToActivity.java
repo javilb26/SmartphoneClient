@@ -91,14 +91,14 @@ public class GoToActivity extends ActionBarActivity {
     }
 
     public void createInstanceArrayAdapter(final HashMap<String, Long> places, int autoCompleteTextView) {
-        if (flag==1) {
-            ArrayAdapter<String> adapterC = new ArrayAdapter<>
-                    (this, android.R.layout.select_dialog_item, iterator(places));
+        ArrayAdapter<String> adapterC = new ArrayAdapter<>
+                (this, android.R.layout.select_dialog_item, iterator(places));
 
-            //Getting the instance of AutoCompleteTextView
-            AutoCompleteTextView actvC = (AutoCompleteTextView) findViewById(autoCompleteTextView);
-            actvC.setThreshold(1);//will start working from first character
-            actvC.setAdapter(adapterC);//setting the adapter data into the AutoCompleteTextView
+        //Getting the instance of AutoCompleteTextView
+        AutoCompleteTextView actvC = (AutoCompleteTextView) findViewById(autoCompleteTextView);
+        actvC.setThreshold(1);//will start working from first character
+        actvC.setAdapter(adapterC);//setting the adapter data into the AutoCompleteTextView
+        if (flag==1) {
             actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -111,13 +111,6 @@ public class GoToActivity extends ActionBarActivity {
             });
         }
         if (flag==2) {
-            ArrayAdapter<String> adapterC = new ArrayAdapter<>
-                    (this, android.R.layout.select_dialog_item, iterator(places));
-
-            //Getting the instance of AutoCompleteTextView
-            AutoCompleteTextView actvC = (AutoCompleteTextView) findViewById(autoCompleteTextView);
-            actvC.setThreshold(1);//will start working from first character
-            actvC.setAdapter(adapterC);//setting the adapter data into the AutoCompleteTextView
             actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -130,13 +123,6 @@ public class GoToActivity extends ActionBarActivity {
             });
         }
         if (flag==3) {
-            ArrayAdapter<String> adapterC = new ArrayAdapter<>
-                    (this, android.R.layout.select_dialog_item, iterator(places));
-
-            //Getting the instance of AutoCompleteTextView
-            AutoCompleteTextView actvC = (AutoCompleteTextView) findViewById(autoCompleteTextView);
-            actvC.setThreshold(1);//will start working from first character
-            actvC.setAdapter(adapterC);//setting the adapter data into the AutoCompleteTextView
             actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -149,13 +135,6 @@ public class GoToActivity extends ActionBarActivity {
             });
         }
         if (flag==4) {
-            ArrayAdapter<String> adapterC = new ArrayAdapter<>
-                    (this, android.R.layout.select_dialog_item, iterator(places));
-
-            //Getting the instance of AutoCompleteTextView
-            AutoCompleteTextView actvC = (AutoCompleteTextView) findViewById(autoCompleteTextView);
-            actvC.setThreshold(1);//will start working from first character
-            actvC.setAdapter(adapterC);//setting the adapter data into the AutoCompleteTextView
             actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

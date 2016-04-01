@@ -49,6 +49,8 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     protected GoogleMap mMap;
     protected LatLng start;
     protected LatLng end;
+    private double distance = (long) 0;
+    protected LatLng firstStart;
     protected Location location = null;
     ArrayList<Polyline> polylines = new ArrayList<>();
     TextView infoRouteTextView = null;
@@ -83,7 +85,12 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
             public void onClick(View view) {
                 //TODO Recuperar bien los valores
                 Log.e("NavigationActivity: ", "travelId: "+getIntent().getLongExtra("travelId", 0));
-                mDestinationReachedTask = new DestinationReachedTask(getIntent().getLongExtra("travelId", 0), 300.0, 43.3415225, -8.4477031, 43.3415225, -8.4477031, "ds");
+                Log.e("NavigationActivity: ", "distance: "+ distance);
+                Log.e("NavigationActivity: ", "firstStart.longitude: "+ firstStart.longitude);
+                Log.e("NavigationActivity: ", "firstStart.latitude: "+ firstStart.latitude);
+                Log.e("NavigationActivity: ", "end.longitude: "+ end.longitude);
+                Log.e("NavigationActivity: ", "end.latitude: "+ end.latitude);
+                mDestinationReachedTask = new DestinationReachedTask(getIntent().getLongExtra("travelId", 0), distance, firstStart.longitude, firstStart.latitude, end.longitude, end.latitude, "arreglarMultiLineString");
                 mDestinationReachedTask.execute((Void) null);
                 //TODO Volver con elegancia xD
                 Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
@@ -147,6 +154,9 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     @Override
     public void onLocationChanged(Location location) {
         start = new LatLng(location.getLatitude(), location.getLongitude());
+        if (firstStart == null) {
+            firstStart = start;
+        }
         Routing routing = new Routing.Builder()
                 .travelMode(AbstractRouting.TravelMode.DRIVING)
                 .withListener(this)
@@ -161,9 +171,12 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         if (infoRoute != null) {
             infoRouteTextView.setText(infoRoute);
         }
-        //TODO Contar la distancia para settear despues
+        //TODO Contar la distancia real? Mucha carga?
         float[] results = new float[1];
         Location.distanceBetween(start.latitude, start.longitude, end.latitude, end.longitude, results);
+        if (distance == (long)0) {
+            distance = results[0];
+        }
         if (results[0]<500) {
             destinationReachedButton.performClick();
         }

@@ -31,6 +31,7 @@ import java.util.Map;
 
 public class GoToActivity extends ActionBarActivity {
 
+    private int flag = 0;
     private String[] placesString;
     private GetCountriesTask mGetCountriesTask = null;
     private GetRegionsTask mGetRegionsTask = null;
@@ -89,87 +90,86 @@ public class GoToActivity extends ActionBarActivity {
         return placesString;
     }
 
-    public void createInstanceArrayAdapterCountries(final HashMap<String, Long> places, int autoCompleteTextView) {
-        ArrayAdapter<String> adapterC = new ArrayAdapter<>
-                (this, android.R.layout.select_dialog_item, iterator(places));
+    public void createInstanceArrayAdapter(final HashMap<String, Long> places, int autoCompleteTextView) {
+        if (flag==1) {
+            ArrayAdapter<String> adapterC = new ArrayAdapter<>
+                    (this, android.R.layout.select_dialog_item, iterator(places));
 
-        //Getting the instance of AutoCompleteTextView
-        AutoCompleteTextView actvC = (AutoCompleteTextView) findViewById(autoCompleteTextView);
-        actvC.setThreshold(1);//will start working from first character
-        actvC.setAdapter(adapterC);//setting the adapter data into the AutoCompleteTextView
-        actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                countryStrSelected = (String) parent.getItemAtPosition(position);
-                countryIdSelected = places.get(countryStrSelected);
-                Log.e("countryId: ", places.get(countryStrSelected).toString());
-                mGetRegionsTask = new GetRegionsTask(places.get(countryStrSelected));
-                mGetRegionsTask.execute((Void) null);
-            }
-        });
+            //Getting the instance of AutoCompleteTextView
+            AutoCompleteTextView actvC = (AutoCompleteTextView) findViewById(autoCompleteTextView);
+            actvC.setThreshold(1);//will start working from first character
+            actvC.setAdapter(adapterC);//setting the adapter data into the AutoCompleteTextView
+            actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    countryStrSelected = (String) parent.getItemAtPosition(position);
+                    countryIdSelected = places.get(countryStrSelected);
+                    Log.e("countryId: ", places.get(countryStrSelected).toString());
+                    mGetRegionsTask = new GetRegionsTask(places.get(countryStrSelected));
+                    mGetRegionsTask.execute((Void) null);
+                }
+            });
+        }
+        if (flag==2) {
+            ArrayAdapter<String> adapterC = new ArrayAdapter<>
+                    (this, android.R.layout.select_dialog_item, iterator(places));
 
-    }
+            //Getting the instance of AutoCompleteTextView
+            AutoCompleteTextView actvC = (AutoCompleteTextView) findViewById(autoCompleteTextView);
+            actvC.setThreshold(1);//will start working from first character
+            actvC.setAdapter(adapterC);//setting the adapter data into the AutoCompleteTextView
+            actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    regionStrSelected = (String) parent.getItemAtPosition(position);
+                    regionIdSelected = places.get(regionStrSelected);
+                    Log.e("regionId: ", places.get(regionStrSelected).toString());
+                    mGetCitiesTask = new GetCitiesTask(places.get(regionStrSelected));
+                    mGetCitiesTask.execute((Void) null);
+                }
+            });
+        }
+        if (flag==3) {
+            ArrayAdapter<String> adapterC = new ArrayAdapter<>
+                    (this, android.R.layout.select_dialog_item, iterator(places));
 
-    public void createInstanceArrayAdapterRegions(final HashMap<String, Long> places, int autoCompleteTextView) {
-        ArrayAdapter<String> adapterR = new ArrayAdapter<>
-                (this, android.R.layout.select_dialog_item, iterator(places));
+            //Getting the instance of AutoCompleteTextView
+            AutoCompleteTextView actvC = (AutoCompleteTextView) findViewById(autoCompleteTextView);
+            actvC.setThreshold(1);//will start working from first character
+            actvC.setAdapter(adapterC);//setting the adapter data into the AutoCompleteTextView
+            actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    cityStrSelected = (String) parent.getItemAtPosition(position);
+                    cityIdSelected = places.get(cityStrSelected);
+                    Log.e("cityId: ", places.get(cityStrSelected).toString());
+                    mGetAddressesTask = new GetAddressesTask(places.get(cityStrSelected));
+                    mGetAddressesTask.execute((Void) null);
+                }
+            });
+        }
+        if (flag==4) {
+            ArrayAdapter<String> adapterC = new ArrayAdapter<>
+                    (this, android.R.layout.select_dialog_item, iterator(places));
 
-        //Getting the instance of AutoCompleteTextView
-        AutoCompleteTextView actvR = (AutoCompleteTextView) findViewById(autoCompleteTextView);
-        actvR.setThreshold(1);//will start working from first character
-        actvR.setAdapter(adapterR);//setting the adapter data into the AutoCompleteTextView
-        actvR.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                regionStrSelected = (String) parent.getItemAtPosition(position);
-                regionIdSelected = places.get(regionStrSelected);
-                Log.e("regionId: ", places.get(regionStrSelected).toString());
-                mGetCitiesTask = new GetCitiesTask(places.get(regionStrSelected));
-                mGetCitiesTask.execute((Void) null);
-            }
-        });
-    }
-
-    public void createInstanceArrayAdapterCities(final HashMap<String, Long> places, int autoCompleteTextView) {
-        ArrayAdapter<String> adapterCi = new ArrayAdapter<>
-                (this, android.R.layout.select_dialog_item, iterator(places));
-
-        //Getting the instance of AutoCompleteTextView
-        AutoCompleteTextView actvCi = (AutoCompleteTextView) findViewById(autoCompleteTextView);
-        actvCi.setThreshold(1);//will start working from first character
-        actvCi.setAdapter(adapterCi);//setting the adapter data into the AutoCompleteTextView
-        actvCi.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                cityStrSelected = (String) parent.getItemAtPosition(position);
-                cityIdSelected = places.get(cityStrSelected);
-                Log.e("cityId: ", places.get(cityStrSelected).toString());
-                mGetAddressesTask = new GetAddressesTask(places.get(cityStrSelected));
-                mGetAddressesTask.execute((Void) null);
-            }
-        });
-    }
-
-    public void createInstanceArrayAdapterAddresses(final HashMap<String, Long> places, int autoCompleteTextView) {
-        ArrayAdapter<String> adapterA = new ArrayAdapter<>
-                (this, android.R.layout.select_dialog_item, iterator(places));
-
-        //Getting the instance of AutoCompleteTextView
-        AutoCompleteTextView actvA = (AutoCompleteTextView) findViewById(autoCompleteTextView);
-        actvA.setThreshold(1);//will start working from first character
-        actvA.setAdapter(adapterA);//setting the adapter data into the AutoCompleteTextView
-        actvA.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                addressStrSelected = (String) parent.getItemAtPosition(position);
-                addressIdSelected = places.get(addressStrSelected);
-            }
-        });
+            //Getting the instance of AutoCompleteTextView
+            AutoCompleteTextView actvC = (AutoCompleteTextView) findViewById(autoCompleteTextView);
+            actvC.setThreshold(1);//will start working from first character
+            actvC.setAdapter(adapterC);//setting the adapter data into the AutoCompleteTextView
+            actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    addressStrSelected = (String) parent.getItemAtPosition(position);
+                    addressIdSelected = places.get(addressStrSelected);
+                }
+            });
+        }
     }
 
     public class GetCountriesTask extends AsyncTask<Void, Void, Boolean> {
 
         GetCountriesTask() {
+            flag=1;
         }
 
         @Override
@@ -194,7 +194,7 @@ public class GoToActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            createInstanceArrayAdapterCountries(countries, R.id.autoCompleteTextViewCountries);
+            createInstanceArrayAdapter(countries, R.id.autoCompleteTextViewCountries);
         }
 
     }
@@ -204,6 +204,7 @@ public class GoToActivity extends ActionBarActivity {
         private final Long mCountryId;
 
         GetRegionsTask(Long countryId) {
+            flag=2;
             mCountryId = countryId;
         }
 
@@ -229,7 +230,7 @@ public class GoToActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            createInstanceArrayAdapterRegions(regions, R.id.autoCompleteTextViewRegions);
+            createInstanceArrayAdapter(regions, R.id.autoCompleteTextViewRegions);
         }
 
     }
@@ -239,6 +240,7 @@ public class GoToActivity extends ActionBarActivity {
         private final Long mRegionId;
 
         GetCitiesTask(Long regionId) {
+            flag=3;
             mRegionId = regionId;
         }
 
@@ -264,7 +266,7 @@ public class GoToActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            createInstanceArrayAdapterCities(cities, R.id.autoCompleteTextViewCities);
+            createInstanceArrayAdapter(cities, R.id.autoCompleteTextViewCities);
         }
 
     }
@@ -274,6 +276,7 @@ public class GoToActivity extends ActionBarActivity {
         private final Long mCityId;
 
         GetAddressesTask(Long cityId) {
+            flag=4;
             mCityId = cityId;
         }
 
@@ -299,7 +302,7 @@ public class GoToActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            createInstanceArrayAdapterAddresses(addresses, R.id.autoCompleteTextViewAddresses);
+            createInstanceArrayAdapter(addresses, R.id.autoCompleteTextViewAddresses);
         }
 
     }

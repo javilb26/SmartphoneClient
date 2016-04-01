@@ -24,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -31,15 +32,15 @@ import java.util.Map;
 
 public class GoToActivity extends ActionBarActivity {
 
-    private int flag = 0;
+    private int flag = 25;
     private String[] placesString;
+    private String[] placesStrSelected;
     private GetCountriesTask mGetCountriesTask = null;
     private GetRegionsTask mGetRegionsTask = null;
     private GetCitiesTask mGetCitiesTask = null;
     private GetAddressesTask mGetAddressesTask = null;
     private TakeClientToTask mTakeClientToTask = null;
     private HashMap<String, Long> countries = new HashMap<>(), regions = new HashMap<>(), cities = new HashMap<>(), addresses = new HashMap<>();
-    private String countryStrSelected, regionStrSelected, cityStrSelected, addressStrSelected;
     private Long countryIdSelected, regionIdSelected, cityIdSelected, addressIdSelected;
     private Long clientId = (long) 0;
     private Long travelId = (long) 0;
@@ -56,7 +57,7 @@ public class GoToActivity extends ActionBarActivity {
         mGoToButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String url = addressStrSelected + ", " + cityStrSelected + ", " + regionStrSelected + ", " + countryStrSelected;
+                String url = placesStrSelected[3] + ", " + placesStrSelected[2] + ", " + placesStrSelected[1] + ", " + placesStrSelected[0];
                 //TODO Cuidado con los tiempos, puede que se ejecute el travelId antes que la creacion del travel -> asegurarse
                 mTakeClientToTask = new TakeClientToTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), clientId, countryIdSelected, regionIdSelected, cityIdSelected, addressIdSelected);
                 mTakeClientToTask.execute((Void) null);
@@ -91,6 +92,7 @@ public class GoToActivity extends ActionBarActivity {
     }
 
     public void createInstanceArrayAdapter(final HashMap<String, Long> places, int autoCompleteTextView) {
+        placesStrSelected = new String[4];
         ArrayAdapter<String> adapterC = new ArrayAdapter<>
                 (this, android.R.layout.select_dialog_item, iterator(places));
 
@@ -98,15 +100,27 @@ public class GoToActivity extends ActionBarActivity {
         AutoCompleteTextView actvC = (AutoCompleteTextView) findViewById(autoCompleteTextView);
         actvC.setThreshold(1);//will start working from first character
         actvC.setAdapter(adapterC);//setting the adapter data into the AutoCompleteTextView
+        if (flag==0) {
+            actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    placesStrSelected[0] = (String) parent.getItemAtPosition(position);
+                    countryIdSelected = places.get(placesStrSelected[0]);
+                    Log.e("countryId: ", places.get(placesStrSelected[0]).toString());
+                    mGetRegionsTask = new GetRegionsTask(places.get(placesStrSelected[0]));
+                    mGetRegionsTask.execute((Void) null);
+                }
+            });
+        }
         if (flag==1) {
             actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    countryStrSelected = (String) parent.getItemAtPosition(position);
-                    countryIdSelected = places.get(countryStrSelected);
-                    Log.e("countryId: ", places.get(countryStrSelected).toString());
-                    mGetRegionsTask = new GetRegionsTask(places.get(countryStrSelected));
-                    mGetRegionsTask.execute((Void) null);
+                    placesStrSelected[1] = (String) parent.getItemAtPosition(position);
+                    regionIdSelected = places.get(placesStrSelected[1]);
+                    Log.e("regionId: ", places.get(placesStrSelected[1]).toString());
+                    mGetCitiesTask = new GetCitiesTask(places.get(placesStrSelected[1]));
+                    mGetCitiesTask.execute((Void) null);
                 }
             });
         }
@@ -114,11 +128,11 @@ public class GoToActivity extends ActionBarActivity {
             actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    regionStrSelected = (String) parent.getItemAtPosition(position);
-                    regionIdSelected = places.get(regionStrSelected);
-                    Log.e("regionId: ", places.get(regionStrSelected).toString());
-                    mGetCitiesTask = new GetCitiesTask(places.get(regionStrSelected));
-                    mGetCitiesTask.execute((Void) null);
+                    placesStrSelected[2] = (String) parent.getItemAtPosition(position);
+                    cityIdSelected = places.get(placesStrSelected[2]);
+                    Log.e("cityId: ", places.get(placesStrSelected[2]).toString());
+                    mGetAddressesTask = new GetAddressesTask(places.get(placesStrSelected[2]));
+                    mGetAddressesTask.execute((Void) null);
                 }
             });
         }
@@ -126,20 +140,8 @@ public class GoToActivity extends ActionBarActivity {
             actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    cityStrSelected = (String) parent.getItemAtPosition(position);
-                    cityIdSelected = places.get(cityStrSelected);
-                    Log.e("cityId: ", places.get(cityStrSelected).toString());
-                    mGetAddressesTask = new GetAddressesTask(places.get(cityStrSelected));
-                    mGetAddressesTask.execute((Void) null);
-                }
-            });
-        }
-        if (flag==4) {
-            actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    addressStrSelected = (String) parent.getItemAtPosition(position);
-                    addressIdSelected = places.get(addressStrSelected);
+                    placesStrSelected[3] = (String) parent.getItemAtPosition(position);
+                    addressIdSelected = places.get(placesStrSelected[3]);
                 }
             });
         }
@@ -148,7 +150,7 @@ public class GoToActivity extends ActionBarActivity {
     public class GetCountriesTask extends AsyncTask<Void, Void, Boolean> {
 
         GetCountriesTask() {
-            flag=1;
+            flag=0;
         }
 
         @Override
@@ -183,7 +185,7 @@ public class GoToActivity extends ActionBarActivity {
         private final Long mCountryId;
 
         GetRegionsTask(Long countryId) {
-            flag=2;
+            flag=1;
             mCountryId = countryId;
         }
 
@@ -219,7 +221,7 @@ public class GoToActivity extends ActionBarActivity {
         private final Long mRegionId;
 
         GetCitiesTask(Long regionId) {
-            flag=3;
+            flag=2;
             mRegionId = regionId;
         }
 
@@ -255,7 +257,7 @@ public class GoToActivity extends ActionBarActivity {
         private final Long mCityId;
 
         GetAddressesTask(Long cityId) {
-            flag=4;
+            flag=3;
             mCityId = cityId;
         }
 

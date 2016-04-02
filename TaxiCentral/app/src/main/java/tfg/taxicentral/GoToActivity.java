@@ -91,6 +91,11 @@ public class GoToActivity extends ActionBarActivity {
         return placesString;
     }
 
+    private void selectStrId(AdapterView<?> parent, int position, HashMap<String, Long> places) {
+        placesStrSelected[flag] = (String) parent.getItemAtPosition(position);
+        placesIdSelected[flag] = places.get(placesStrSelected[flag]);
+    }
+
     public void createInstanceArrayAdapter(final HashMap<String, Long> places, int autoCompleteTextView) {
         ArrayAdapter<String> adapterC = new ArrayAdapter<>
                 (this, android.R.layout.select_dialog_item, iterator(places));
@@ -103,10 +108,8 @@ public class GoToActivity extends ActionBarActivity {
             actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    placesStrSelected[0] = (String) parent.getItemAtPosition(position);
-                    placesIdSelected[0] = places.get(placesStrSelected[0]);
-                    Log.e("countryId: ", places.get(placesStrSelected[0]).toString());
-                    mGetRegionsTask = new GetRegionsTask(places.get(placesStrSelected[0]));
+                    selectStrId(parent, position, places);
+                    mGetRegionsTask = new GetRegionsTask(placesIdSelected[flag]);
                     mGetRegionsTask.execute((Void) null);
                 }
             });
@@ -115,10 +118,8 @@ public class GoToActivity extends ActionBarActivity {
             actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    placesStrSelected[1] = (String) parent.getItemAtPosition(position);
-                    placesIdSelected[1] = places.get(placesStrSelected[1]);
-                    Log.e("regionId: ", places.get(placesStrSelected[1]).toString());
-                    mGetCitiesTask = new GetCitiesTask(places.get(placesStrSelected[1]));
+                    selectStrId(parent, position, places);
+                    mGetCitiesTask = new GetCitiesTask(placesIdSelected[flag]);
                     mGetCitiesTask.execute((Void) null);
                 }
             });
@@ -127,10 +128,8 @@ public class GoToActivity extends ActionBarActivity {
             actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    placesStrSelected[2] = (String) parent.getItemAtPosition(position);
-                    placesIdSelected[2] = places.get(placesStrSelected[2]);
-                    Log.e("cityId: ", places.get(placesStrSelected[2]).toString());
-                    mGetAddressesTask = new GetAddressesTask(places.get(placesStrSelected[2]));
+                    selectStrId(parent, position, places);
+                    mGetAddressesTask = new GetAddressesTask(placesIdSelected[flag]);
                     mGetAddressesTask.execute((Void) null);
                 }
             });
@@ -139,8 +138,7 @@ public class GoToActivity extends ActionBarActivity {
             actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    placesStrSelected[3] = (String) parent.getItemAtPosition(position);
-                    placesIdSelected[3] = places.get(placesStrSelected[3]);
+                    selectStrId(parent, position, places);
                 }
             });
         }

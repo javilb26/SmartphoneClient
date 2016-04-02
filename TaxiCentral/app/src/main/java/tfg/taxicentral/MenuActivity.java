@@ -6,14 +6,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 public class MenuActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, new String[]{"Go to", "Actual state", "Plan future travel",
                 "Planned travels", "Cancel current travel", "History", "View taxi stands"});
         setListAdapter(adapter);

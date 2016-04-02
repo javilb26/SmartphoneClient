@@ -4,8 +4,8 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,7 +15,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -24,13 +23,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class GoToActivity extends ActionBarActivity {
+public class GoToActivity extends AppCompatActivity {
 
     private int flag = 25;
     private String[] placesString;
@@ -61,7 +59,7 @@ public class GoToActivity extends ActionBarActivity {
                 mTakeClientToTask.execute((Void) null);
                 try {
                     List<Address> geocodeMatches = new Geocoder(getApplicationContext()).getFromLocationName(url, 1);
-                    if ((geocodeMatches == null) || (!geocodeMatches.isEmpty())) {
+                    if (geocodeMatches != null) {
                         Intent intent = new Intent(getApplicationContext(), NavigationActivity.class);
                         intent.putExtra("url", url);
                         intent.putExtra("lat", geocodeMatches.get(0).getLatitude());
@@ -97,7 +95,6 @@ public class GoToActivity extends ActionBarActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             HttpGet get;
-            Log.e("GoToActivity: ", "mId: " + mId);
             if (mId == 0) {
                 get = new HttpGet(getString(R.string.ip) + mUrl);
             } else {
@@ -218,8 +215,6 @@ public class GoToActivity extends ActionBarActivity {
             try {
                 HttpResponse resp = new DefaultHttpClient().execute(put);
                 String respStr = EntityUtils.toString(resp.getEntity());
-                if (!respStr.equals("true"))
-                    return false;
                 travelId = Long.valueOf(respStr);
             } catch (Exception ex) {
                 Log.e("ServicioRest", "Error!", ex);

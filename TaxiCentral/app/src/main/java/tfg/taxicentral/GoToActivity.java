@@ -30,7 +30,7 @@ import java.util.Map;
 
 public class GoToActivity extends AppCompatActivity {
 
-    private int flag = 25;
+    private int flag = 0;
     private String[] placesString;
     private String[] placesStrSelected = new String[4];
     private Long[] placesIdSelected = new Long[4];
@@ -46,7 +46,6 @@ public class GoToActivity extends AppCompatActivity {
         setContentView(R.layout.activity_go_to);
 
         mGetPlacesTask = new GetPlacesTask("country", (long) 0, "countryId", countries, R.id.autoCompleteTextViewCountries);
-        flag = 0;
         mGetPlacesTask.execute((Void) null);
 
         Button mGoToButton = (Button) findViewById(R.id.goToButton);
@@ -192,12 +191,7 @@ public class GoToActivity extends AppCompatActivity {
 
     public class TakeClientToTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final Long mTaxiId;
-        private final Long mClientId;
-        private final Long mCountryId;
-        private final Long mRegionId;
-        private final Long mCityId;
-        private final Long mAddressId;
+        private final Long mTaxiId, mClientId, mCountryId, mRegionId, mCityId, mAddressId;
 
         TakeClientToTask(Long taxiId, Long clientId, Long countryId, Long regionId, Long cityId, Long addressId) {
             mTaxiId = taxiId;

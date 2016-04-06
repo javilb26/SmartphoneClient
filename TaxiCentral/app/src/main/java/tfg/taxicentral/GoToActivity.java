@@ -44,8 +44,26 @@ public class GoToActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_go_to);
+        //TODO Poner de forma elegante los predefinidos
+        AutoCompleteTextView actv;
+        actv = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewCountries);
+        placesStrSelected[0]="ESPAÑA";
+        placesIdSelected[0]=(long)1;
+        actv.setText("ESPAÑA");
+        actv = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewRegions);
+        actv.setText("A Coruña");
+        placesStrSelected[1]="A Coruña";
+        placesIdSelected[1]=(long)9;
+        actv = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewCities);
+        actv.setText("A Coruña");
+        placesStrSelected[2]="A Coruña";
+        placesIdSelected[2]=(long)6944;
+        mGetPlacesTask = new GetPlacesTask("city/", placesIdSelected[2], "addressId", addresses, R.id.autoCompleteTextViewAddresses);
+        flag = 3;
+        mGetPlacesTask.execute((Void) null);
 
         mGetPlacesTask = new GetPlacesTask("country", (long) 0, "countryId", countries, R.id.autoCompleteTextViewCountries);
+        flag = 0;
         mGetPlacesTask.execute((Void) null);
 
         Button mGoToButton = (Button) findViewById(R.id.goToButton);
@@ -53,6 +71,7 @@ public class GoToActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String url = placesStrSelected[3] + ", " + placesStrSelected[2] + ", " + placesStrSelected[1] + ", " + placesStrSelected[0];
+                Log.e("GoTo", url + "clientId: " + clientId);
                 //TODO Cuidado con los tiempos, puede que se ejecute el travelId antes que la creacion del travel -> asegurarse
                 mTakeClientToTask = new TakeClientToTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), clientId, placesIdSelected[0], placesIdSelected[1], placesIdSelected[2], placesIdSelected[3]);
                 mTakeClientToTask.execute((Void) null);

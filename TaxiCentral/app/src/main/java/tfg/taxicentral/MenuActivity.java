@@ -13,7 +13,7 @@ public class MenuActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, new String[]{"Go to", "Actual state", "Plan future travel",
+                android.R.layout.simple_list_item_1, new String[]{"Navigation", "Go to", "Actual state", "Plan future travel",
                 "Planned travels", "Cancel current travel", "History", "View taxi stands"});
         setListAdapter(adapter);
     }
@@ -23,6 +23,9 @@ public class MenuActivity extends ListActivity {
         String item = (String) getListAdapter().getItem(position);
         Intent intent = null;
         switch (item) {
+            case "Navigation":
+                intent = new Intent(getApplicationContext(), NavigationActivity.class);
+                break;
             case "Go to":
                 intent = new Intent(getApplicationContext(), GoToActivity.class);
                 break;

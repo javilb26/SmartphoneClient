@@ -30,7 +30,7 @@ import java.util.Map;
 
 public class GoToActivity extends AppCompatActivity {
 
-    private int flag = 0;
+    private int flag = 25;
     private String[] placesString;
     private String[] placesStrSelected = new String[4];
     private Long[] placesIdSelected = new Long[4];
@@ -44,6 +44,7 @@ public class GoToActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_go_to);
+
         //TODO Poner de forma elegante los predefinidos
         AutoCompleteTextView actv;
         actv = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewCountries);
@@ -62,9 +63,17 @@ public class GoToActivity extends AppCompatActivity {
         flag = 3;
         mGetPlacesTask.execute((Void) null);
 
-        mGetPlacesTask = new GetPlacesTask("country", (long) 0, "countryId", countries, R.id.autoCompleteTextViewCountries);
-        flag = 0;
-        mGetPlacesTask.execute((Void) null);
+        AutoCompleteTextView actvC = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewCountries);
+        actvC.setOnClickListener(new AdapterView.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO hay que darle dos veces para que cargue
+                Log.e("HOLAA","HOLAAAAAAA");
+                mGetPlacesTask = new GetPlacesTask("country", (long) 0, "countryId", countries, R.id.autoCompleteTextViewCountries);
+                flag = 0;
+                mGetPlacesTask.execute((Void) null);
+            }
+        });
 
         Button mGoToButton = (Button) findViewById(R.id.goToButton);
         mGoToButton.setOnClickListener(new View.OnClickListener() {
@@ -72,9 +81,14 @@ public class GoToActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String url = placesStrSelected[3] + ", " + placesStrSelected[2] + ", " + placesStrSelected[1] + ", " + placesStrSelected[0];
                 Log.e("GoTo", url + "clientId: " + clientId);
-                //TODO Cuidado con los tiempos, puede que se ejecute el travelId antes que la creacion del travel -> asegurarse
+                //TODO Rectificar los tiempos, se ejecuta el travelId antes que la creacion del travel -> asegurarse
                 mTakeClientToTask = new TakeClientToTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), clientId, placesIdSelected[0], placesIdSelected[1], placesIdSelected[2], placesIdSelected[3]);
                 mTakeClientToTask.execute((Void) null);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 try {
                     List<Address> geocodeMatches = new Geocoder(getApplicationContext()).getFromLocationName(url, 1);
                     if (geocodeMatches != null) {
@@ -83,6 +97,7 @@ public class GoToActivity extends AppCompatActivity {
                         intent.putExtra("lat", geocodeMatches.get(0).getLatitude());
                         intent.putExtra("lng", geocodeMatches.get(0).getLongitude());
                         intent.putExtra("travelId", travelId);
+                        intent.putExtra("routing", true);
                         startActivity(intent);
                     } else {
                         Toast.makeText(getApplicationContext(), "Destino no encontrado", Toast.LENGTH_SHORT).show();
@@ -203,6 +218,7 @@ public class GoToActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     selectStrId(parent, position, places);
+                    Log.e("Goto", placesStrSelected[3] + ", " + placesStrSelected[2] + ", " + placesStrSelected[1] + ", " + placesStrSelected[0]);
                 }
             });
         }
@@ -226,6 +242,7 @@ public class GoToActivity extends AppCompatActivity {
             HttpPut put = new HttpPut(getString(R.string.ip) + "taxi/" + mTaxiId + "/client/" + mClientId + "/country/" + mCountryId + "/region/" + mRegionId + "/city/" + mCityId + "/address/" + mAddressId);
             put.setHeader("content-type", "application/json");
             try {
+                Log.e("GoTo", "taxi/" + mTaxiId + "/client/" + mClientId + "/country/" + mCountryId + "/region/" + mRegionId + "/city/" + mCityId + "/address/" + mAddressId);
                 HttpResponse resp = new DefaultHttpClient().execute(put);
                 String respStr = EntityUtils.toString(resp.getEntity());
                 travelId = Long.valueOf(respStr);

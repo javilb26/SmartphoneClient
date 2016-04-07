@@ -3,9 +3,7 @@ package tfg.taxicentral;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
 import android.location.Criteria;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -28,7 +26,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -40,9 +37,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class NavigationActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener, RoutingListener {
 
@@ -59,6 +54,7 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     Button destinationReachedButton = null;
     String infoRouteWithRoutes = null;
     String infoRoute = null;
+    Boolean routing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,36 +64,43 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        routing = getIntent().getBooleanExtra("routing", false);
         infoRouteTextView = (TextView) findViewById(R.id.infoRouteTextView);
         futureStateButton = (Button) findViewById(R.id.futureStateButton);
-        futureStateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.e("App","futurestate");
-                Intent intent = new Intent(getApplicationContext(), FutureStateActivity.class);
-                startActivity(intent);
-
-            }
-        });
         destinationReachedButton = (Button) findViewById(R.id.arrivalButton);
-        destinationReachedButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //TODO Recuperar bien los valores
-                Log.e("NavigationActivity: ", "travelId: "+getIntent().getLongExtra("travelId", 0));
-                Log.e("NavigationActivity: ", "distance: "+ distance);
-                Log.e("NavigationActivity: ", "firstStart.longitude: "+ firstStart.longitude);
-                Log.e("NavigationActivity: ", "firstStart.latitude: "+ firstStart.latitude);
-                Log.e("NavigationActivity: ", "end.longitude: "+ end.longitude);
-                Log.e("NavigationActivity: ", "end.latitude: "+ end.latitude);
-                mDestinationReachedTask = new DestinationReachedTask(getIntent().getLongExtra("travelId", 0), distance, firstStart.longitude, firstStart.latitude, end.longitude, end.latitude, "arreglarMultiLineString");
-                mDestinationReachedTask.execute((Void) null);
-                //TODO Volver con elegancia xD
-                Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+        if (routing) {
+            futureStateButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.e("App", "futurestate");
+                    Intent intent = new Intent(getApplicationContext(), FutureStateActivity.class);
+                    startActivity(intent);
+
+                }
+            });
+            destinationReachedButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //TODO Recuperar bien los valores
+                    Log.e("NavigationActivity: ", "travelId: " + getIntent().getLongExtra("travelId", 0));
+                    Log.e("NavigationActivity: ", "distance: " + distance);
+                    Log.e("NavigationActivity: ", "firstStart.longitude: " + firstStart.longitude);
+                    Log.e("NavigationActivity: ", "firstStart.latitude: " + firstStart.latitude);
+                    Log.e("NavigationActivity: ", "end.longitude: " + end.longitude);
+                    Log.e("NavigationActivity: ", "end.latitude: " + end.latitude);
+                    mDestinationReachedTask = new DestinationReachedTask(getIntent().getLongExtra("travelId", 0), distance, firstStart.longitude, firstStart.latitude, end.longitude, end.latitude, "arreglarMultiLineString");
+                    mDestinationReachedTask.execute((Void) null);
+                    //TODO Volver con elegancia xD
+                    Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        } else {
+            infoRouteTextView.setVisibility(View.INVISIBLE);
+            futureStateButton.setVisibility(View.INVISIBLE);
+            destinationReachedButton.setVisibility(View.INVISIBLE);
+        }
     }
 
     /**
@@ -116,9 +119,6 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         double lat = getIntent().getDoubleExtra("lat", 43.3415225);
         double lng = getIntent().getDoubleExtra("lng", -8.4477031);
         end = new LatLng(lat, lng);
-        //mMap.addMarker(new MarkerOptions().position(latLng).title("Destination: " + url));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        //mMap.moveCamera(CameraUpdateFactory.zoomTo(16));
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -140,12 +140,12 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         String provider = locationManager.getBestProvider(criteria, true);
         // Getting Current Location From GPS
 
-        while (location==null) {
+        while (location == null) {
             locationManager.requestLocationUpdates(provider, 5000, 0, this);
             location = locationManager.getLastKnownLocation(provider);
         }
 
-        if(location!=null){
+        if (location != null) {
             onLocationChanged(location);
         }
         locationManager.requestLocationUpdates(provider, 5000, 0, this);
@@ -154,33 +154,33 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     @Override
     public void onLocationChanged(Location location) {
         start = new LatLng(location.getLatitude(), location.getLongitude());
-        if (firstStart == null) {
-            firstStart = start;
-        }
-        Routing routing = new Routing.Builder()
-                .travelMode(AbstractRouting.TravelMode.DRIVING)
-                .withListener(this)
-                .alternativeRoutes(true)
-                .waypoints(start, end)
-                .build();
-        routing.execute();
-
         mMap.moveCamera(CameraUpdateFactory.newLatLng(start));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(16));
         Log.e("NavigationActivity", "onLocationChanged");
-        if (infoRoute != null) {
-            infoRouteTextView.setText(infoRoute);
+        if (routing) {
+            if (firstStart == null) {
+                firstStart = start;
+            }
+            Routing routing = new Routing.Builder()
+                    .travelMode(AbstractRouting.TravelMode.DRIVING)
+                    .withListener(this)
+                    .alternativeRoutes(true)
+                    .waypoints(start, end)
+                    .build();
+            routing.execute();
+            if (infoRoute != null) {
+                infoRouteTextView.setText(infoRoute);
+            }
+            //TODO Contar la distancia real? Mucha carga?
+            float[] results = new float[1];
+            Location.distanceBetween(start.latitude, start.longitude, end.latitude, end.longitude, results);
+            if (distance == (long) 0) {
+                distance = results[0];
+            }
+            if (results[0] < 500) {
+                destinationReachedButton.performClick();
+            }
         }
-        //TODO Contar la distancia real? Mucha carga?
-        float[] results = new float[1];
-        Location.distanceBetween(start.latitude, start.longitude, end.latitude, end.longitude, results);
-        if (distance == (long)0) {
-            distance = results[0];
-        }
-        if (results[0]<500) {
-            destinationReachedButton.performClick();
-        }
-
     }
 
     @Override
@@ -203,9 +203,9 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     public void onRoutingFailure(RouteException e) {
         // The Routing request failed
         //progressDialog.dismiss();
-        if(e != null) {
+        if (e != null) {
             Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }else {
+        } else {
             Toast.makeText(this, "Something went wrong, Try again", Toast.LENGTH_SHORT).show();
         }
     }
@@ -227,7 +227,7 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         //map.moveCamera(center);
 
 
-        if(polylines.size()>0) {
+        if (polylines.size() > 0) {
             for (Polyline poly : polylines) {
                 poly.remove();
             }
@@ -235,8 +235,8 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
 
         polylines = new ArrayList<>();
         //add route(s) to the map.
-        for (int i = 0; i <1; i++) {
-        //for (int i = 0; i <route.size(); i++) {
+        for (int i = 0; i < 1; i++) {
+            //for (int i = 0; i <route.size(); i++) {
 
             //In case of more than X alternative routes
             int colorIndex = i % COLORS.length;
@@ -248,8 +248,8 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
             Polyline polyline = mMap.addPolyline(polyOptions);
             polylines.add(polyline);
 
-            infoRouteWithRoutes = "Route "+ (i+1) +": distance - "+ route.get(i).getDistanceValue()+": duration - "+ route.get(i).getDurationValue();
-            infoRoute = "distance - "+ route.get(i).getDistanceValue()+": duration - "+ route.get(i).getDurationValue();
+            infoRouteWithRoutes = "Route " + (i + 1) + ": distance - " + route.get(i).getDistanceValue() + ": duration - " + route.get(i).getDurationValue();
+            infoRoute = "distance - " + route.get(i).getDistanceValue() + ": duration - " + route.get(i).getDurationValue();
             //Toast.makeText(getApplicationContext(), infoRoute,Toast.LENGTH_SHORT).show();
         }
 
@@ -297,18 +297,15 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         protected Boolean doInBackground(Void... params) {
             boolean resul = true;
             HttpClient httpClient = new DefaultHttpClient();
-            HttpPut put = new HttpPut(getString(R.string.ip)+"arrival/" + mTravelId + "/distance/" + mDistance + "/originpoint/" + mOX + "/" + mOY + "/destinationpoint/" + mDX + "/" + mDY + "/path/" + mPath);
+            HttpPut put = new HttpPut(getString(R.string.ip) + "arrival/" + mTravelId + "/distance/" + mDistance + "/originpoint/" + mOX + "/" + mOY + "/destinationpoint/" + mDX + "/" + mDY + "/path/" + mPath);
             put.setHeader("content-type", "application/json");
-            try
-            {
+            try {
                 HttpResponse resp = httpClient.execute(put);
                 String respStr = EntityUtils.toString(resp.getEntity());
-                if(!respStr.equals("true"))
+                if (!respStr.equals("true"))
                     resul = false;
-            }
-            catch(Exception ex)
-            {
-                Log.e("ServicioRest","Error!", ex);
+            } catch (Exception ex) {
+                Log.e("ServicioRest", "Error!", ex);
                 resul = false;
             }
             return resul;

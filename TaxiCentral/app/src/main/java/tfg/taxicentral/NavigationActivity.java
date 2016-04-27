@@ -55,6 +55,7 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     String infoRouteWithRoutes = null;
     String infoRoute = null;
     Boolean routing;
+    private UpdatePositionTaxiTask mUpdatePositionTaxiTask = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,8 +92,8 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
                     mDestinationReachedTask = new DestinationReachedTask(getIntent().getLongExtra("travelId", 0), distance, firstStart.longitude, firstStart.latitude, end.longitude, end.latitude, "arreglarMultiLineString");
                     mDestinationReachedTask.execute((Void) null);
                     //TODO Volver con elegancia xD
-                    Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
-                    startActivity(intent);
+                    //Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
+                    //startActivity(intent);
                     finish();
                 }
             });
@@ -157,6 +158,8 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         mMap.moveCamera(CameraUpdateFactory.newLatLng(start));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(16));
         Log.e("NavigationActivity", "onLocationChanged");
+        mUpdatePositionTaxiTask = new UpdatePositionTaxiTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), start.latitude, start.longitude);
+        mUpdatePositionTaxiTask.execute((Void) null);
         if (routing) {
             if (firstStart == null) {
                 firstStart = start;
@@ -309,6 +312,36 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
                 resul = false;
             }
             return resul;
+        }
+
+    }
+
+    public class UpdatePositionTaxiTask extends AsyncTask<Void, Void, Boolean> {
+
+        private final Long mTaxiId;
+        private final Double mX;
+        private final Double mY;
+
+        UpdatePositionTaxiTask(Long taxiId,Double x, Double y) {
+            mTaxiId = taxiId;
+            mX = x;
+            mY = y;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            HttpPut put = new HttpPut(getString(R.string.ip) + "taxi/" + mTaxiId + "/position/" + mX + "/" + mY);
+            put.setHeader("content-type", "application/json");
+            try {
+                HttpResponse resp = new DefaultHttpClient().execute(put);
+                String respStr = EntityUtils.toString(resp.getEntity());
+                if (!respStr.equals("true"))
+                    return false;
+            } catch (Exception ex) {
+                Log.e("ServicioRest", "Error!", ex);
+                return false;
+            }
+            return true;
         }
 
     }

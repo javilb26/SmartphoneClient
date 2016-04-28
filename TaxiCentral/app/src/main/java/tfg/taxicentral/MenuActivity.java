@@ -45,7 +45,7 @@ public class MenuActivity extends ListActivity {
 
                 break;
             case "View taxi stands":
-
+                intent = new Intent(getApplicationContext(), NearestStandsActivity.class);
                 break;
         }
         startActivity(intent);

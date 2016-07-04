@@ -48,7 +48,7 @@ public class FutureStateActivity extends ListActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            HttpPut put = new HttpPut(getString(R.string.ip) + "taxi/" + mTaxiId + "/futurestate/" + mState);
+            HttpPut put = new HttpPut(getString(R.string.ip) + "taxis/" + mTaxiId + "/futurestate/" + mState);
             put.setHeader("content-type", "application/json");
             try {
                 HttpResponse resp = new DefaultHttpClient().execute(put);

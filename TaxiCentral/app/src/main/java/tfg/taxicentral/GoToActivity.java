@@ -59,7 +59,7 @@ public class GoToActivity extends AppCompatActivity {
         actv.setText("A Coruña");
         placesStrSelected[2]="A Coruña";
         placesIdSelected[2]=(long)6944;
-        mGetPlacesTask = new GetPlacesTask("city/", placesIdSelected[2], "addressId", addresses, R.id.autoCompleteTextViewAddresses);
+        mGetPlacesTask = new GetPlacesTask("cities/", placesIdSelected[2], "addressId", addresses, R.id.autoCompleteTextViewAddresses);
         flag = 3;
         mGetPlacesTask.execute((Void) null);
 
@@ -69,7 +69,7 @@ public class GoToActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //TODO hay que darle dos veces para que cargue
                 Log.e("HOLAA","HOLAAAAAAA");
-                mGetPlacesTask = new GetPlacesTask("country", (long) 0, "countryId", countries, R.id.autoCompleteTextViewCountries);
+                mGetPlacesTask = new GetPlacesTask("countries", (long) 0, "countryId", countries, R.id.autoCompleteTextViewCountries);
                 flag = 0;
                 mGetPlacesTask.execute((Void) null);
             }
@@ -185,7 +185,7 @@ public class GoToActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     selectStrId(parent, position, places);
-                    mGetPlacesTask = new GetPlacesTask("country/", placesIdSelected[flag], "regionId", regions, R.id.autoCompleteTextViewRegions);
+                    mGetPlacesTask = new GetPlacesTask("countries/", placesIdSelected[flag], "regionId", regions, R.id.autoCompleteTextViewRegions);
                     flag = 1;
                     mGetPlacesTask.execute((Void) null);
                 }
@@ -196,7 +196,7 @@ public class GoToActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     selectStrId(parent, position, places);
-                    mGetPlacesTask = new GetPlacesTask("region/", placesIdSelected[flag], "cityId", cities, R.id.autoCompleteTextViewCities);
+                    mGetPlacesTask = new GetPlacesTask("regions/", placesIdSelected[flag], "cityId", cities, R.id.autoCompleteTextViewCities);
                     flag = 2;
                     mGetPlacesTask.execute((Void) null);
                 }
@@ -207,7 +207,7 @@ public class GoToActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     selectStrId(parent, position, places);
-                    mGetPlacesTask = new GetPlacesTask("city/", placesIdSelected[flag], "addressId", addresses, R.id.autoCompleteTextViewAddresses);
+                    mGetPlacesTask = new GetPlacesTask("cities/", placesIdSelected[flag], "addressId", addresses, R.id.autoCompleteTextViewAddresses);
                     flag = 3;
                     mGetPlacesTask.execute((Void) null);
                 }
@@ -239,7 +239,7 @@ public class GoToActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            HttpPut put = new HttpPut(getString(R.string.ip) + "taxi/" + mTaxiId + "/client/" + mClientId + "/country/" + mCountryId + "/region/" + mRegionId + "/city/" + mCityId + "/address/" + mAddressId);
+            HttpPut put = new HttpPut(getString(R.string.ip) + "taxis/" + mTaxiId + "/clients/" + mClientId + "/countries/" + mCountryId + "/regions/" + mRegionId + "/cities/" + mCityId + "/addresses/" + mAddressId);
             put.setHeader("content-type", "application/json");
             try {
                 Log.e("GoTo", "taxi/" + mTaxiId + "/client/" + mClientId + "/country/" + mCountryId + "/region/" + mRegionId + "/city/" + mCityId + "/address/" + mAddressId);

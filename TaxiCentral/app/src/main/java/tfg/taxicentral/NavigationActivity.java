@@ -330,7 +330,7 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            HttpPut put = new HttpPut(getString(R.string.ip) + "taxi/" + mTaxiId + "/position/" + mX + "/" + mY);
+            HttpPut put = new HttpPut(getString(R.string.ip) + "taxis/" + mTaxiId + "/position/" + mX + "/" + mY);
             put.setHeader("content-type", "application/json");
             try {
                 HttpResponse resp = new DefaultHttpClient().execute(put);

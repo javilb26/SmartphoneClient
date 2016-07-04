@@ -78,7 +78,7 @@ public class NearestStandsActivity extends ListActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            HttpGet get = new HttpGet(getString(R.string.ip) + "taxi/" + mTaxiId + "/stands");
+            HttpGet get = new HttpGet(getString(R.string.ip) + "taxis/" + mTaxiId + "/stands");
             get.setHeader("content-type", "application/json");
             try {
                 HttpResponse resp = new DefaultHttpClient().execute(get);
@@ -112,7 +112,7 @@ public class NearestStandsActivity extends ListActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            HttpGet get = new HttpGet(getString(R.string.ip) + "stand/" + mStandId + "/numtaxis");
+            HttpGet get = new HttpGet(getString(R.string.ip) + "stands/" + mStandId + "/numtaxis");
             get.setHeader("content-type", "application/json");
             try {
                 HttpResponse resp = new DefaultHttpClient().execute(get);

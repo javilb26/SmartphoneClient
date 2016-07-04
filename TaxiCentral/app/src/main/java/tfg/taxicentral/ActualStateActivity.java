@@ -48,7 +48,7 @@ public class ActualStateActivity extends ListActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            HttpPut put = new HttpPut(getString(R.string.ip) + "taxi/" + mTaxiId + "/actualstate/" + mState);
+            HttpPut put = new HttpPut(getString(R.string.ip) + "taxis/" + mTaxiId + "/actualstate/" + mState);
             put.setHeader("content-type", "application/json");
             try {
                 HttpResponse resp = new DefaultHttpClient().execute(put);

@@ -37,7 +37,6 @@ public class GoToActivity extends AppCompatActivity {
     private GetPlacesTask mGetPlacesTask = null;
     private TakeClientToTask mTakeClientToTask = null;
     private HashMap<String, Long> countries = new HashMap<>(), regions = new HashMap<>(), cities = new HashMap<>(), addresses = new HashMap<>();
-    private Long clientId = (long) 0;
     private Long travelId = (long) 0;
 
     @Override
@@ -80,9 +79,9 @@ public class GoToActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String url = placesStrSelected[3] + ", " + placesStrSelected[2] + ", " + placesStrSelected[1] + ", " + placesStrSelected[0];
-                Log.e("GoTo", url + "clientId: " + clientId);
+                Log.e("GoTo", url);
                 //TODO Rectificar los tiempos, se ejecuta el travelId antes que la creacion del travel -> asegurarse
-                mTakeClientToTask = new TakeClientToTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), clientId, placesIdSelected[0], placesIdSelected[1], placesIdSelected[2], placesIdSelected[3]);
+                mTakeClientToTask = new TakeClientToTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), placesIdSelected[0], placesIdSelected[1], placesIdSelected[2], placesIdSelected[3]);
                 mTakeClientToTask.execute((Void) null);
                 try {
                     Thread.sleep(1000);
@@ -99,6 +98,7 @@ public class GoToActivity extends AppCompatActivity {
                         intent.putExtra("travelId", travelId);
                         intent.putExtra("routing", true);
                         startActivity(intent);
+                        finish();
                     } else {
                         Toast.makeText(getApplicationContext(), "Destino no encontrado", Toast.LENGTH_SHORT).show();
                     }
@@ -226,11 +226,10 @@ public class GoToActivity extends AppCompatActivity {
 
     public class TakeClientToTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final Long mTaxiId, mClientId, mCountryId, mRegionId, mCityId, mAddressId;
+        private final Long mTaxiId, mCountryId, mRegionId, mCityId, mAddressId;
 
-        TakeClientToTask(Long taxiId, Long clientId, Long countryId, Long regionId, Long cityId, Long addressId) {
+        TakeClientToTask(Long taxiId, Long countryId, Long regionId, Long cityId, Long addressId) {
             mTaxiId = taxiId;
-            mClientId = clientId;
             mCountryId = countryId;
             mRegionId = regionId;
             mCityId = cityId;
@@ -239,10 +238,10 @@ public class GoToActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            HttpPut put = new HttpPut(getString(R.string.ip) + "taxis/" + mTaxiId + "/clients/" + mClientId + "/countries/" + mCountryId + "/regions/" + mRegionId + "/cities/" + mCityId + "/addresses/" + mAddressId);
+            HttpPut put = new HttpPut(getString(R.string.ip) + "taxis/" + mTaxiId + "/countries/" + mCountryId + "/regions/" + mRegionId + "/cities/" + mCityId + "/addresses/" + mAddressId);
             put.setHeader("content-type", "application/json");
             try {
-                Log.e("GoTo", "taxi/" + mTaxiId + "/client/" + mClientId + "/country/" + mCountryId + "/region/" + mRegionId + "/city/" + mCityId + "/address/" + mAddressId);
+                Log.e("GoTo", "taxis/" + mTaxiId + "/countries/" + mCountryId + "/regions/" + mRegionId + "/cities/" + mCityId + "/addresses/" + mAddressId);
                 HttpResponse resp = new DefaultHttpClient().execute(put);
                 String respStr = EntityUtils.toString(resp.getEntity());
                 travelId = Long.valueOf(respStr);

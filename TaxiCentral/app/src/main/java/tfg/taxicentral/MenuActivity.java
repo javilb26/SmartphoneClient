@@ -36,13 +36,13 @@ public class MenuActivity extends ListActivity {
 
                 break;
             case "Planned travels":
-
+                intent = new Intent(getApplicationContext(), FutureTravelsActivity.class);
                 break;
             case "Cancel current travel":
-
+                intent = new Intent(getApplicationContext(), CancelTravelActivity.class);
                 break;
             case "History":
-
+                intent = new Intent(getApplicationContext(), HistoryActivity.class);
                 break;
             case "View taxi stands":
                 intent = new Intent(getApplicationContext(), NearestStandsActivity.class);

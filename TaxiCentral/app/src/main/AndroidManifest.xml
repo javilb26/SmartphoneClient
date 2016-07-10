@@ -48,6 +48,9 @@
             android:name=".NavigationActivity"
             android:label="@string/title_activity_navigation"></activity>
         <activity android:name=".NearestStandsActivity"></activity>
+        <activity android:name=".HistoryActivity"></activity>
+        <activity android:name=".FutureTravelsActivity"></activity>
+        <activity android:name=".CancelTravelActivity"></activity>
     </application>
 
 </manifest>

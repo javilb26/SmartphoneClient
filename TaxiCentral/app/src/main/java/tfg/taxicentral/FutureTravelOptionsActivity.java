@@ -55,6 +55,14 @@ public class FutureTravelOptionsActivity extends AppCompatActivity {
                         getIntent().getLongExtra("originCountryId",0), getIntent().getLongExtra("originRegionId",0), getIntent().getLongExtra("originCityId", 0), getIntent().getLongExtra("originAddressId",0),
                         getIntent().getLongExtra("destinationCountryId",0), getIntent().getLongExtra("destinationRegionId",0), getIntent().getLongExtra("destinationCityId",0), getIntent().getLongExtra("destinationAddressId",0));
                 mTakeClientToFromFutureTravelTask.execute((Void) null);
+
+                if (mCancelFutureTravelTask != null) {
+                    return;
+                }
+                mCancelFutureTravelTask = new CancelFutureTravelTask(getIntent().getLongExtra("futureTravelId",0));
+                mCancelFutureTravelTask.execute((Void) null);
+                Toast.makeText(getApplicationContext(), "FutureTravel deleted", Toast.LENGTH_SHORT).show();
+
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {

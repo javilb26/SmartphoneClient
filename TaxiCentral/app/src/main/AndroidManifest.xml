@@ -53,6 +53,7 @@
         <activity android:name=".CancelTravelActivity"></activity>
         <activity android:name=".PlanFutureTravelOriginActivity"></activity>
         <activity android:name=".PlanFutureTravelDestinationActivity"></activity>
+        <activity android:name=".FutureTravelOptionsActivity"></activity>
     </application>
 
 </manifest>

@@ -51,6 +51,8 @@
         <activity android:name=".HistoryActivity"></activity>
         <activity android:name=".FutureTravelsActivity"></activity>
         <activity android:name=".CancelTravelActivity"></activity>
+        <activity android:name=".PlanFutureTravelOriginActivity"></activity>
+        <activity android:name=".PlanFutureTravelDestinationActivity"></activity>
     </application>
 
 </manifest>

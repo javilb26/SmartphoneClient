@@ -33,7 +33,7 @@ public class MenuActivity extends ListActivity {
                 intent = new Intent(getApplicationContext(), ActualStateActivity.class);
                 break;
             case "Plan future travel":
-
+                intent = new Intent(getApplicationContext(), PlanFutureTravelOriginActivity.class);
                 break;
             case "Planned travels":
                 intent = new Intent(getApplicationContext(), FutureTravelsActivity.class);

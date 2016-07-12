@@ -1,98 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ScrollView01"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.pfg.taxicentral.GoToActivity">
+    tools:context="com.pfg.taxicentral.PlanFutureTravelDestinationActivity">
 
     <TextView
-        android:id="@+id/countriesTextView"
+        android:id="@+id/destinationCountriesTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="Countries: " />
+        android:text="DestinationCountries: " />
 
     <AutoCompleteTextView
-        android:id="@+id/autoCompleteTextViewCountries"
+        android:id="@+id/autoCompleteTextViewDestinationCountries"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/countriesTextView"
+        android:layout_below="@+id/destinationCountriesTextView"
         android:ems="10"
         android:text="">
         <requestFocus />
     </AutoCompleteTextView>
 
     <TextView
-        android:id="@+id/regionsTextView"
+        android:id="@+id/destinationRegionsTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="10dp"
-        android:layout_below="@+id/autoCompleteTextViewCountries"
-        android:text="Regions: " />
+        android:layout_below="@+id/autoCompleteTextViewDestinationCountries"
+        android:text="DestinationRegions: " />
 
     <AutoCompleteTextView
-        android:id="@+id/autoCompleteTextViewRegions"
+        android:id="@+id/autoCompleteTextViewDestinationRegions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/regionsTextView"
+        android:layout_below="@+id/destinationRegionsTextView"
         android:ems="10"
         android:text="">
         <requestFocus />
     </AutoCompleteTextView>
 
     <TextView
-        android:id="@+id/citiesTextView"
+        android:id="@+id/destinationCitiesTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="10dp"
-        android:layout_below="@+id/autoCompleteTextViewRegions"
-        android:text="Cities: " />
+        android:layout_below="@+id/autoCompleteTextViewDestinationRegions"
+        android:text="DestinationCities: " />
 
     <AutoCompleteTextView
-        android:id="@+id/autoCompleteTextViewCities"
+        android:id="@+id/autoCompleteTextViewDestinationCities"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/citiesTextView"
+        android:layout_below="@+id/destinationCitiesTextView"
         android:ems="10"
         android:text="">
         <requestFocus />
     </AutoCompleteTextView>
 
     <TextView
-        android:id="@+id/addressesTextView"
+        android:id="@+id/destinationAddressesTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="10dp"
-        android:layout_below="@+id/autoCompleteTextViewCities"
-        android:text="Addresses: " />
+        android:layout_below="@+id/autoCompleteTextViewDestinationCities"
+        android:text="DestinationAddresses: " />
 
     <AutoCompleteTextView
-        android:id="@+id/autoCompleteTextViewAddresses"
+        android:id="@+id/autoCompleteTextViewDestinationAddresses"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/addressesTextView"
+        android:layout_below="@+id/destinationAddressesTextView"
         android:ems="10"
         android:text="">
         <requestFocus />
     </AutoCompleteTextView>
 
     <Button
-        android:id="@+id/goToButton"
+        android:id="@+id/planFutureTravelButton"
         style="?android:textAppearanceSmall"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:layout_below="@+id/autoCompleteTextViewAddresses"
-        android:text="Go To"
+        android:layout_below="@+id/autoCompleteTextViewDestinationAddresses"
+        android:text="Plan future travel"
         android:textStyle="bold"/>
 
 </RelativeLayout>
+
+    </ScrollView>

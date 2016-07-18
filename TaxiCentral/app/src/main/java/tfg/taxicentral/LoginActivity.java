@@ -22,6 +22,7 @@ import android.widget.TextView;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
@@ -37,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
+    private SetTokenTask mSetTokenTask = null;
 
     // UI references.
     private EditText mTaxiIdView;
@@ -214,6 +216,11 @@ public class LoginActivity extends AppCompatActivity {
                 //    editor.clear();
                 //    editor.commit();
                 //}
+                if (getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getInt("refreshedTokenFlag",0)==1) {
+                    sendRegistrationToServer(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getString("token",null));
+                    Log.e("Entro en firebase","desde login");
+                }
+
             }
             catch(Exception ex)
             {
@@ -249,6 +256,43 @@ public class LoginActivity extends AppCompatActivity {
         //menuIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //Este flag se carga la sesion?
         startActivity(menuIntent);
+    }
+
+    private void sendRegistrationToServer(String token) {
+        if (mSetTokenTask != null) {
+            return;
+        }
+
+        mSetTokenTask = new SetTokenTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), token);
+        mSetTokenTask.execute((Void) null);
+    }
+
+    public class SetTokenTask extends AsyncTask<Void, Void, Boolean> {
+
+        private final Long mTaxiId;
+        private final String mToken;
+
+        SetTokenTask(Long taxiId, String token) {
+            mTaxiId = taxiId;
+            mToken = token;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            HttpPut put = new HttpPut(getString(R.string.ip) + "taxis/" + mTaxiId + "/token/" + mToken);
+            put.setHeader("content-type", "application/json");
+            try {
+                HttpResponse resp = new DefaultHttpClient().execute(put);
+                String respStr = EntityUtils.toString(resp.getEntity());
+                if (!respStr.equals("true"))
+                    return false;
+            } catch (Exception ex) {
+                Log.e("ServicioRest", "Error!", ex);
+                return false;
+            }
+            return true;
+        }
+
     }
 }
 

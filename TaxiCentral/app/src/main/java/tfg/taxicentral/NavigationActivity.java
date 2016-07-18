@@ -22,6 +22,7 @@ import com.directions.route.Route;
 import com.directions.route.RouteException;
 import com.directions.route.Routing;
 import com.directions.route.RoutingListener;
+import com.directions.route.Segment;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -38,6 +39,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class NavigationActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener, RoutingListener {
 
@@ -56,6 +58,7 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     String infoRoute = null;
     Boolean routing;
     private UpdatePositionTaxiTask mUpdatePositionTaxiTask = null;
+    String path = "MULTILINESTRING(";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,6 +174,31 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
                     .waypoints(start, end)
                     .build();
             routing.execute();
+            /*
+            try {
+                Route route = routing.get().get(0);
+                List<Segment> segmentList = route.getSegments();
+                int flag = 0;
+                for (Segment segment: segmentList) {
+                    for (LatLng latLng: route.getPoints()) {
+                        if (segment.startPoint()==latLng) {
+                            if (flag==1) {
+                                path.concat(",");
+                            }
+                            path.concat("("+String.valueOf(latLng.longitude)+" "+String.valueOf(latLng.latitude));
+                        } else {
+                            path.concat(","+String.valueOf(latLng.longitude)+" "+String.valueOf(latLng.latitude));
+                        }
+                        flag=1;
+                    }
+                    path.concat(")");
+                }
+                path.concat(")");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Log.e("NavigationActivity", "path: " + path);
+            */
             if (infoRoute != null) {
                 infoRouteTextView.setText(infoRoute);
             }

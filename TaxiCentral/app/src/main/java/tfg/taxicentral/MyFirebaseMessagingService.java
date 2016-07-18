@@ -37,11 +37,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void sendNotification(String data) {
         String[] parts = data.split(",");
         Intent intent = new Intent(this, AlertActivity.class);
-        intent.putExtra("clientId", Long.valueOf(parts[0].substring(parts[0].indexOf(":") + 1)));
-        intent.putExtra("country", parts[1].substring(parts[1].indexOf(":") + 1));
-        intent.putExtra("region", parts[2].substring(parts[2].indexOf(":") + 1));
-        intent.putExtra("city", parts[3].substring(parts[3].indexOf(":") + 1));
-        intent.putExtra("address", parts[4].substring(parts[4].indexOf(":") + 1));
+        intent.putExtra("clientId", Long.valueOf(parts[0].substring(parts[0].indexOf(":")+1)));
+        intent.putExtra("country", parts[1].substring(parts[1].indexOf(":")+2, parts[1].length()-1));
+        intent.putExtra("region", parts[2].substring(parts[2].indexOf(":")+2, parts[2].length()-1));
+        intent.putExtra("city", parts[3].substring(parts[3].indexOf(":")+2, parts[3].length()-1));
+        intent.putExtra("address", parts[4].substring(parts[4].indexOf(":")+2, parts[4].length()-2));
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                 PendingIntent.FLAG_ONE_SHOT);

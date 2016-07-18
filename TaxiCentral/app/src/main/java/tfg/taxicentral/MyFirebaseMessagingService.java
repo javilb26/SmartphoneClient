@@ -29,18 +29,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         //Calling method to generate notification
         //sendNotification(remoteMessage.getNotification().getBody());
-        sendNotification(remoteMessage.getData());
+        sendNotification(remoteMessage.getData().get("data"));
     }
 
     //This method is only generating push notification
     //It is same as we did in earlier posts
-    private void sendNotification(Map<String, String> data) {
+    private void sendNotification(String data) {
+        String[] parts = data.split(",");
         Intent intent = new Intent(this, AlertActivity.class);
-        intent.putExtra("clientId", Long.valueOf(data.get("clientId")));
-        intent.putExtra("country", data.get("country"));
-        intent.putExtra("region", data.get("region"));
-        intent.putExtra("city", data.get("city"));
-        intent.putExtra("address", data.get("address"));
+        intent.putExtra("clientId", Long.valueOf(parts[0].substring(parts[0].indexOf(":") + 1)));
+        intent.putExtra("country", parts[1].substring(parts[1].indexOf(":") + 1));
+        intent.putExtra("region", parts[2].substring(parts[2].indexOf(":") + 1));
+        intent.putExtra("city", parts[3].substring(parts[3].indexOf(":") + 1));
+        intent.putExtra("address", parts[4].substring(parts[4].indexOf(":") + 1));
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                 PendingIntent.FLAG_ONE_SHOT);

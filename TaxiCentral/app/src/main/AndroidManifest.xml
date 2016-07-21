@@ -55,6 +55,7 @@
         <activity android:name=".PlanFutureTravelDestinationActivity"></activity>
         <activity android:name=".FutureTravelOptionsActivity"></activity>
         <activity android:name=".AlertActivity"></activity>
+        <activity android:name=".LocateActivity"></activity>
 
         <service
             android:name=".MyFirebaseMessagingService">

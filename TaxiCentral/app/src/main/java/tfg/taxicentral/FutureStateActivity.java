@@ -21,7 +21,7 @@ public class FutureStateActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, new String[]{"Off", "Available", "Busy"});
+                android.R.layout.simple_list_item_1, new String[]{"Off", "Available"});
         setListAdapter(adapter);
     }
 

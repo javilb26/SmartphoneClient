@@ -26,6 +26,7 @@ public class NearestStandsActivity extends ListActivity {
     String[] stand;
     String numTaxis;
     int nearestStandsTaskFlag = 0, numTaxisStandTaskFlag = 0;
+    int notEmptyStandsFlag = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +45,14 @@ public class NearestStandsActivity extends ListActivity {
         while (nearestStandsTaskFlag == 0) {
 
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, stand);
-        setListAdapter(adapter);
+        if (notEmptyStandsFlag == 0) {
+            Toast.makeText(getApplicationContext(), "No stands", Toast.LENGTH_SHORT).show();
+            finish();
+        } else {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                    android.R.layout.simple_list_item_1, stand);
+            setListAdapter(adapter);
+        }
     }
 
     @Override
@@ -89,10 +95,11 @@ public class NearestStandsActivity extends ListActivity {
                     JSONObject obj = respJSON.getJSONObject(i);
                     //TODO mirar si lo ideal seria que teniendo un array de ids (manteniendo la misma i que para stand apareciera ya en view taxi stands el numero de taxis en parada
                     stand[i] = obj.getLong("standId") + " - '" + obj.getString("name") + "'";
-                    nearestStandsTaskFlag = 1;
+                    notEmptyStandsFlag = 1;
+
                     //Log.e("NearestStands","Stand: " + stand[i].toString());
                 }
-
+                nearestStandsTaskFlag = 1;
             } catch (Exception ex) {
                 Log.e("ServicioRest", "Error!", ex);
                 return false;

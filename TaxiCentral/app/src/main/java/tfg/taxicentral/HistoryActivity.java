@@ -23,6 +23,7 @@ public class HistoryActivity extends ListActivity {
     String[] history;
     String numTaxis;
     int historyTaskFlag = 0, numTaxisStandTaskFlag = 0;
+    int notEmptyHistoryFlag = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +42,15 @@ public class HistoryActivity extends ListActivity {
         while (historyTaskFlag == 0) {
 
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, history);
-        setListAdapter(adapter);
+        if (notEmptyHistoryFlag == 0) {
+            Toast.makeText(getApplicationContext(), "No travels", Toast.LENGTH_SHORT).show();
+            finish();
+        } else {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                    android.R.layout.simple_list_item_1, history);
+            setListAdapter(adapter);
+        }
+
     }
 /*
     //TODO Al clickar en un travel -> mostrar en Navigation la ruta hecha
@@ -98,10 +105,10 @@ public class HistoryActivity extends ListActivity {
                     JSONObject originPoint = obj.getJSONObject("originPoint");
                     JSONObject destinationPoint = obj.getJSONObject("destinationPoint");
                     history[i] = obj.getLong("travelId") + " - '" + obj.getString("date") + "'" + " - '" + originCountry.getString("name") + "'" + " - '" + originRegion.getString("name") + "'" + " - '" + originCity.getString("name") + "'" + " - '" + originAddress.getString("name") + "'" + " - '" + destinationCountry.getString("name") + "'" + " - '" + destinationRegion.getString("name") + "'" + " - '" + destinationCity.getString("name") + "'" + " - '" + destinationAddress.getString("name") + "'" + " - '" + obj.getLong("distance") + "'" + " - '" + originPoint.getString("coordinates") + "'" + " - '" + destinationPoint.getString("coordinates") + "'" + " - '" + obj.getString("path") + "'";
-                    historyTaskFlag = 1;
+                    notEmptyHistoryFlag = 1;
                     //Log.e("NearestStands","Stand: " + stand[i].toString());
                 }
-
+                historyTaskFlag = 1;
             } catch (Exception ex) {
                 Log.e("ServicioRest", "Error!", ex);
                 return false;

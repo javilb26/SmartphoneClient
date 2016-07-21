@@ -26,6 +26,7 @@ public class FutureTravelsActivity extends ListActivity {
     int futureTravelsTaskFlag = 0, numTaxisStandTaskFlag = 0;
     long[] futureTravelId, originCountryId, originRegionId, originCityId, originAddressId, destinationCountryId, destinationRegionId, destinationCityId, destinationAddressId;
     String[] originCountryStr, originRegionStr, originCityStr, originAddressStr, destinationCountryStr, destinationRegionStr, destinationCityStr, destinationAddressStr;
+    int notEmptyHistoryFlag = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +45,14 @@ public class FutureTravelsActivity extends ListActivity {
         while (futureTravelsTaskFlag == 0) {
 
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, futureTravels);
-        setListAdapter(adapter);
+        if (notEmptyHistoryFlag == 0) {
+            Toast.makeText(getApplicationContext(), "No futuretravels", Toast.LENGTH_SHORT).show();
+            finish();
+        } else {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                    android.R.layout.simple_list_item_1, futureTravels);
+            setListAdapter(adapter);
+        }
     }
 
     //Ir a
@@ -124,7 +130,7 @@ public class FutureTravelsActivity extends ListActivity {
                     JSONObject destinationCity = obj.getJSONObject("destinationCity");
                     JSONObject destinationAddress = obj.getJSONObject("destinationAddress");
                     futureTravels[i] = obj.getLong("futureTravelId") + " - '" + obj.getString("date") + "'" + " - '" + originCountry.getString("name") + "'" + " - '" + originRegion.getString("name") + "'" + " - '" + originCity.getString("name") + "'" + " - '" + originAddress.getString("name") + "'" + " - '" + destinationCountry.getString("name") + "'" + " - '" + destinationRegion.getString("name") + "'" + " - '" + destinationCity.getString("name") + "'" + " - '" + destinationAddress.getString("name") + "'";
-                    futureTravelsTaskFlag = 1;
+
                     //Log.e("NearestStands","Stand: " + stand[i].toString());
                     futureTravelId[i] = obj.getLong("futureTravelId");
                     originCountryStr[i] = originCountry.getString("name");
@@ -144,8 +150,9 @@ public class FutureTravelsActivity extends ListActivity {
                     destinationRegionId[i] = destinationRegion.getLong("regionId");
                     destinationCityId[i] = destinationCity.getLong("cityId");
                     destinationAddressId[i] = destinationAddress.getLong("addressId");
+                    notEmptyHistoryFlag = 1;
                 }
-
+                futureTravelsTaskFlag = 1;
             } catch (Exception ex) {
                 Log.e("ServicioRest", "Error!", ex);
                 return false;

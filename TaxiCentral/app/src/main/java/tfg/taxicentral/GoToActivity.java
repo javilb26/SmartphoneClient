@@ -178,12 +178,14 @@ public class GoToActivity extends AppCompatActivity {
                 (this, android.R.layout.select_dialog_item, iterator(places));
         //Getting the instance of AutoCompleteTextView
         AutoCompleteTextView actvC = (AutoCompleteTextView) findViewById(autoCompleteTextView);
+        Log.e("GoToActivity", "createInstanceArrayAdapter");
         actvC.setThreshold(1);//will start working from first character
         actvC.setAdapter(adapterC);//setting the adapter data into the AutoCompleteTextView
         if (flag == 0) {
             actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.e("GoToActivity", "createInstanceArrayAdapter -> Flag: " + flag);
                     selectStrId(parent, position, places);
                     mGetPlacesTask = new GetPlacesTask("countries/", placesIdSelected[flag], "regionId", regions, R.id.autoCompleteTextViewRegions);
                     flag = 1;
@@ -195,6 +197,7 @@ public class GoToActivity extends AppCompatActivity {
             actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.e("GoToActivity", "createInstanceArrayAdapter -> Flag: " + flag);
                     selectStrId(parent, position, places);
                     mGetPlacesTask = new GetPlacesTask("regions/", placesIdSelected[flag], "cityId", cities, R.id.autoCompleteTextViewCities);
                     flag = 2;
@@ -206,6 +209,7 @@ public class GoToActivity extends AppCompatActivity {
             actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.e("GoToActivity", "createInstanceArrayAdapter -> Flag: " + flag);
                     selectStrId(parent, position, places);
                     mGetPlacesTask = new GetPlacesTask("cities/", placesIdSelected[flag], "addressId", addresses, R.id.autoCompleteTextViewAddresses);
                     flag = 3;
@@ -217,6 +221,7 @@ public class GoToActivity extends AppCompatActivity {
             actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.e("GoToActivity", "createInstanceArrayAdapter -> Flag: " + flag);
                     selectStrId(parent, position, places);
                     Log.e("Goto", placesStrSelected[3] + ", " + placesStrSelected[2] + ", " + placesStrSelected[1] + ", " + placesStrSelected[0]);
                 }

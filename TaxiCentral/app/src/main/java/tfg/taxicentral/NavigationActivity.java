@@ -34,9 +34,12 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +61,10 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     String infoRoute = null;
     Boolean routing;
     private UpdatePositionTaxiTask mUpdatePositionTaxiTask = null;
-    String path = "MULTILINESTRING(";
+    String path = "LINESTRING(";
+    int pathFlag = 0;
+    String path2 = "";
+    //Boolean historyPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +75,7 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         routing = getIntent().getBooleanExtra("routing", false);
+        //historyPath = getIntent().getBooleanExtra("historyPath", false);
         infoRouteTextView = (TextView) findViewById(R.id.infoRouteTextView);
         futureStateButton = (Button) findViewById(R.id.futureStateButton);
         destinationReachedButton = (Button) findViewById(R.id.arrivalButton);
@@ -92,7 +99,13 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
                     Log.e("NavigationActivity: ", "firstStart.latitude: " + firstStart.latitude);
                     Log.e("NavigationActivity: ", "end.longitude: " + end.longitude);
                     Log.e("NavigationActivity: ", "end.latitude: " + end.latitude);
-                    mDestinationReachedTask = new DestinationReachedTask(getIntent().getLongExtra("travelId", 0), distance, firstStart.longitude, firstStart.latitude, end.longitude, end.latitude, "arreglarMultiLineString");
+                    Log.e("NavigationActivity", "path: " + path);
+                    path2 = path.substring(0,path.length()-1);
+                    Log.e("NavigationActivity", "pathL: " + path.length());
+                    path2+=")";
+                    Log.e("NavigationActivity", "path2L: " + path2.length());
+                    Log.e("NavigationActivity", "path2Str: " + path2.substring(path2.length()-5, path2.length()));
+                    mDestinationReachedTask = new DestinationReachedTask(getIntent().getLongExtra("travelId", 0), distance, firstStart.longitude, firstStart.latitude, end.longitude, end.latitude, path2);
                     mDestinationReachedTask.execute((Void) null);
                     //TODO Volver con elegancia xD
                     //Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
@@ -160,7 +173,7 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         start = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLng(start));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(16));
-        Log.e("NavigationActivity", "onLocationChanged");
+        Log.d("NavigationActivity", "onLocationChanged");
         mUpdatePositionTaxiTask = new UpdatePositionTaxiTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), start.latitude, start.longitude);
         mUpdatePositionTaxiTask.execute((Void) null);
         if (routing) {
@@ -174,31 +187,11 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
                     .waypoints(start, end)
                     .build();
             routing.execute();
-            /*
-            try {
-                Route route = routing.get().get(0);
-                List<Segment> segmentList = route.getSegments();
-                int flag = 0;
-                for (Segment segment: segmentList) {
-                    for (LatLng latLng: route.getPoints()) {
-                        if (segment.startPoint()==latLng) {
-                            if (flag==1) {
-                                path.concat(",");
-                            }
-                            path.concat("("+String.valueOf(latLng.longitude)+" "+String.valueOf(latLng.latitude));
-                        } else {
-                            path.concat(","+String.valueOf(latLng.longitude)+" "+String.valueOf(latLng.latitude));
-                        }
-                        flag=1;
-                    }
-                    path.concat(")");
-                }
-                path.concat(")");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            Log.e("NavigationActivity", "path: " + path);
-            */
+
+
+
+            path+=location.getLatitude()+" "+location.getLongitude()+",";
+
             if (infoRoute != null) {
                 infoRouteTextView.setText(infoRoute);
             }
@@ -328,11 +321,22 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         protected Boolean doInBackground(Void... params) {
             boolean resul = true;
             HttpClient httpClient = new DefaultHttpClient();
-            HttpPut put = new HttpPut(getString(R.string.ip) + "arrival/" + mTravelId + "/distance/" + mDistance + "/originpoint/" + mOX + "/" + mOY + "/destinationpoint/" + mDX + "/" + mDY + "/path/" + mPath);
-            put.setHeader("content-type", "application/json");
+            HttpPost post = new HttpPost(getString(R.string.ip) + "destination");
+            post.setHeader("content-type", "application/json");
             try {
-                HttpResponse resp = httpClient.execute(put);
+                JSONObject object = new JSONObject();
+                object.put("travelId",mTravelId);
+                object.put("distance",mDistance);
+                object.put("oX",mOX);
+                object.put("oY",mOY);
+                object.put("dX",mDX);
+                object.put("dY",mDY);
+                object.put("path",mPath);
+                StringEntity entity = new StringEntity(object.toString());
+                post.setEntity(entity);
+                HttpResponse resp = httpClient.execute(post);
                 String respStr = EntityUtils.toString(resp.getEntity());
+                Log.e("NavigationActivity", "respStr: " + respStr);
                 if (!respStr.equals("true"))
                     resul = false;
             } catch (Exception ex) {

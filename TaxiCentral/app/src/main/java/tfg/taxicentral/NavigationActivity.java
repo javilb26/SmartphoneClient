@@ -64,7 +64,7 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     String path = "LINESTRING(";
     int pathFlag = 0;
     String path2 = "";
-    //Boolean historyPath;
+    Boolean historyPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,10 +75,11 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         routing = getIntent().getBooleanExtra("routing", false);
-        //historyPath = getIntent().getBooleanExtra("historyPath", false);
+        historyPath = getIntent().getBooleanExtra("historyPath", false);
         infoRouteTextView = (TextView) findViewById(R.id.infoRouteTextView);
         futureStateButton = (Button) findViewById(R.id.futureStateButton);
         destinationReachedButton = (Button) findViewById(R.id.arrivalButton);
+
         if (routing) {
             futureStateButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -92,7 +93,6 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
             destinationReachedButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //TODO Recuperar bien los valores
                     Log.e("NavigationActivity: ", "travelId: " + getIntent().getLongExtra("travelId", 0));
                     Log.e("NavigationActivity: ", "distance: " + distance);
                     Log.e("NavigationActivity: ", "firstStart.longitude: " + firstStart.longitude);
@@ -107,9 +107,6 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
                     Log.e("NavigationActivity", "path2Str: " + path2.substring(path2.length()-5, path2.length()));
                     mDestinationReachedTask = new DestinationReachedTask(getIntent().getLongExtra("travelId", 0), distance, firstStart.longitude, firstStart.latitude, end.longitude, end.latitude, path2);
                     mDestinationReachedTask.execute((Void) null);
-                    //TODO Volver con elegancia xD
-                    //Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
-                    //startActivity(intent);
                     finish();
                 }
             });
@@ -137,35 +134,68 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         double lng = getIntent().getDoubleExtra("lng", -8.4477031);
         end = new LatLng(lat, lng);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            Toast.makeText(getApplicationContext(), "Debe garantizar los permisos de localizacion para funcionar", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        mMap.setMyLocationEnabled(true);
-        // Getting LocationManager object from System Service LOCATION_SERVICE
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        // Creating a criteria object to retrieve provider
-        Criteria criteria = new Criteria();
-        // Getting the name of the best provider
-        String provider = locationManager.getBestProvider(criteria, true);
-        // Getting Current Location From GPS
+        if (historyPath) {
 
-        while (location == null) {
+            // Instantiates a new Polyline object and adds points to define a rectangle
+            PolylineOptions rectOptions = new PolylineOptions();
+            String path = getIntent().getStringExtra("path");
+            Log.e("NavigationActivity", "path: " + path);
+            Log.e("NavigationActivity", "path2: " + path.substring(1,path.length()-1));
+            String path2 = path.substring(1,path.length()-1);
+            path2 = path2 + ",";
+            String[] paths = path2.split("],");
+            boolean firstPoint = false;
+            for (String pathAux: paths) {
+                Log.e("NavigationActivity", "pathAux: " + pathAux);
+                String pathAux2 = pathAux.substring(1,pathAux.length());
+                Log.e("NavigationActivity", "pathAux2: " + pathAux2);
+                String[] aux = pathAux2.split(",");
+                Log.e("NavigationActivity", "aux: " + aux[1] + ", " + aux[0]);
+                double latAux = Double.parseDouble(aux[0]);
+                double lngAux = Double.parseDouble(aux[1]);
+                rectOptions.add(new LatLng(latAux, lngAux));
+                if (!firstPoint) {
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latAux, lngAux)));
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+                }
+                firstPoint = true;
+            }
+            Log.e("JODER", rectOptions.getPoints().toString());
+            // Get back the mutable Polyline
+            Polyline polyline = mMap.addPolyline(rectOptions);
+        } else {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                Toast.makeText(getApplicationContext(), "Debe garantizar los permisos de localizacion para funcionar", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            mMap.setMyLocationEnabled(true);
+            // Getting LocationManager object from System Service LOCATION_SERVICE
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            // Creating a criteria object to retrieve provider
+            Criteria criteria = new Criteria();
+            // Getting the name of the best provider
+            String provider = locationManager.getBestProvider(criteria, true);
+            // Getting Current Location From GPS
+
+            while (location == null) {
+                locationManager.requestLocationUpdates(provider, 5000, 0, this);
+                location = locationManager.getLastKnownLocation(provider);
+            }
+
+            if (location != null) {
+                onLocationChanged(location);
+            }
             locationManager.requestLocationUpdates(provider, 5000, 0, this);
-            location = locationManager.getLastKnownLocation(provider);
         }
 
-        if (location != null) {
-            onLocationChanged(location);
-        }
-        locationManager.requestLocationUpdates(provider, 5000, 0, this);
+
     }
 
     @Override

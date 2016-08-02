@@ -1,6 +1,7 @@
 package tfg.taxicentral;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,11 +17,14 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class HistoryActivity extends ListActivity {
 
     private HistoryTask mHistoryTask = null;
     //private NumTaxisStandTask mNumTaxisStandTask = null;
     String[] history;
+    String[] paths;
     String numTaxis;
     int historyTaskFlag = 0, numTaxisStandTaskFlag = 0;
     int notEmptyHistoryFlag = 0;
@@ -52,27 +56,19 @@ public class HistoryActivity extends ListActivity {
         }
 
     }
-/*
-    //TODO Al clickar en un travel -> mostrar en Navigation la ruta hecha
+
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        numTaxisStandTaskFlag = 0;
-        Log.e("NearestStandsActivity", "item pulsado");
+        Log.e("HistoryActivity", "item pulsado");
         String item = (String) getListAdapter().getItem(position);
-        Log.e("NearestStandsActivity", item.substring(0,1));
-        mNumTaxisStandTask = new NumTaxisStandTask(new Long(item.substring(0,1)));
-        mNumTaxisStandTask.execute((Void) null);
-        //TODO Arreglar actualizacion
-        while (numTaxisStandTaskFlag == 0) {
-
-        }
-        if (numTaxis.compareTo("")==0) {
-            numTaxis = "0";
-        }
-        Toast.makeText(getApplicationContext(), numTaxis, Toast.LENGTH_SHORT).show();
-        //super.finish();
+        Log.e("HistoryActivity", item);
+        Intent intent = new Intent(getApplicationContext(), NavigationActivity.class);
+        intent.putExtra("path", paths[position]);
+        Log.e("path", paths[position]);
+        intent.putExtra("historyPath", true);
+        startActivity(intent);
     }
-*/
+
     public class HistoryTask extends AsyncTask<Void, Void, Boolean> {
 
         private final Long mTaxiId;
@@ -90,6 +86,7 @@ public class HistoryActivity extends ListActivity {
                 String respStr = EntityUtils.toString(resp.getEntity());
                 JSONArray respJSON = new JSONArray(respStr);
                 history = new String[respJSON.length()];
+                paths = new String[999999];
                 for (int i = 0; i < respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
                     //Log.e("HistoryActivity",obj.toString());
@@ -104,7 +101,9 @@ public class HistoryActivity extends ListActivity {
                     JSONObject destinationAddress = obj.getJSONObject("destinationAddress");
                     JSONObject originPoint = obj.getJSONObject("originPoint");
                     JSONObject destinationPoint = obj.getJSONObject("destinationPoint");
+                    JSONObject path = obj.getJSONObject("path");
                     history[i] = obj.getLong("travelId") + " - '" + obj.getString("date") + "'" + " - '" + originCountry.getString("name") + "'" + " - '" + originRegion.getString("name") + "'" + " - '" + originCity.getString("name") + "'" + " - '" + originAddress.getString("name") + "'" + " - '" + destinationCountry.getString("name") + "'" + " - '" + destinationRegion.getString("name") + "'" + " - '" + destinationCity.getString("name") + "'" + " - '" + destinationAddress.getString("name") + "'" + " - '" + obj.getLong("distance") + "'" + " - '" + originPoint.getString("coordinates") + "'" + " - '" + destinationPoint.getString("coordinates") + "'" + " - '" + obj.getString("path") + "'";
+                    paths[i]= path.getString("coordinates");
                     notEmptyHistoryFlag = 1;
                     //Log.e("NearestStands","Stand: " + stand[i].toString());
                 }

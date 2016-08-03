@@ -17,4 +17,8 @@
     <string name="title_activity_navigation">Navigation</string>
 
     <!-- Strings related to menu -->
+
+    <!-- Strings related to goto -->
+    <string name="spain">España</string>
+    <string name="corunna">A Coruña</string>
 </resources>

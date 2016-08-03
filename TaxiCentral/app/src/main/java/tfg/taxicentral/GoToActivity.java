@@ -32,50 +32,49 @@ public class GoToActivity extends AppCompatActivity {
 
     private String countryStrSelected, regionStrSelected, cityStrSelected, addressStrSelected;
     private Long countryIdSelected, regionIdSelected, cityIdSelected, addressIdSelected;
-
-
-    private int flag = 25;
-    private String[] placesString;
-    private GetPlacesTask mGetPlacesTask = null;
-    private TakeClientToTask mTakeClientToTask = null;
+    private String[] countriesString, regionsString, citiesString, addressesString;
     private HashMap<String, Long> countries = new HashMap<>(), regions = new HashMap<>(), cities = new HashMap<>(), addresses = new HashMap<>();
+    private TakeClientToTask mTakeClientToTask = null;
     private Long travelId = (long) 0;
+    private GetCountriesTask mGetCountriesTask = null;
+    private GetRegionsTask mGetRegionsTask = null;
+    private GetCitiesTask mGetCitiesTask = null;
+    private GetAddressesTask mGetAddressesTask = null;
+    AutoCompleteTextView actvCountries;
+    AutoCompleteTextView actvRegions;
+    AutoCompleteTextView actvCities;
+    AutoCompleteTextView actvAddresses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_go_to);
 
-        AutoCompleteTextView actvCountries = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewCountries);
-        countryStrSelected="ESPAÑA";
-        countryIdSelected=(long)1;
-        actvCountries.setText("ESPAÑA");
+        actvCountries = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewCountries);
+        actvRegions = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewRegions);
+        actvCities = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewCities);
+        actvAddresses = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewAddresses);
 
-        AutoCompleteTextView actvRegions = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewRegions);
-        actvRegions.setText("A Coruña");
-        regionStrSelected="A Coruña";
+        mGetCountriesTask = new GetCountriesTask();
+        mGetCountriesTask.execute((Void) null);
+        countryStrSelected=getString(R.string.spain);
+        countryIdSelected=(long)1;
+        actvCountries.setText(getString(R.string.spain));
+
+        mGetRegionsTask = new GetRegionsTask(countryIdSelected);
+        mGetRegionsTask.execute((Void) null);
+        actvRegions.setText(getString(R.string.corunna));
+        regionStrSelected=getString(R.string.corunna);
         regionIdSelected=(long)9;
 
-        AutoCompleteTextView actvCities = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewCities);
-        actvCities.setText("A Coruña");
-        cityStrSelected="A Coruña";
+        mGetCitiesTask = new GetCitiesTask(regionIdSelected);
+        mGetCitiesTask.execute((Void) null);
+        actvCities.setText(getString(R.string.corunna));
+        cityStrSelected=getString(R.string.corunna);
         cityIdSelected=(long)6944;
 
-        mGetPlacesTask = new GetPlacesTask("cities/", cityIdSelected, "addressId", addresses, R.id.autoCompleteTextViewAddresses);
-        flag = 3;
-        mGetPlacesTask.execute((Void) null);
-
-        AutoCompleteTextView actvC = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewCountries);
-        actvC.setOnClickListener(new AdapterView.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO hay que darle dos veces para que cargue
-                Log.e("HOLAA","HOLAAAAAAA");
-                mGetPlacesTask = new GetPlacesTask("countries", (long) 0, "countryId", countries, R.id.autoCompleteTextViewCountries);
-                flag = 0;
-                mGetPlacesTask.execute((Void) null);
-            }
-        });
+        mGetAddressesTask = new GetAddressesTask(cityIdSelected);
+        mGetAddressesTask.execute((Void) null);
 
         Button mGoToButton = (Button) findViewById(R.id.goToButton);
         mGoToButton.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +82,7 @@ public class GoToActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String url = addressStrSelected + ", " + cityStrSelected + ", " + regionStrSelected + ", " + countryStrSelected;
                 Log.e("GoTo", url);
-                //TODO Rectificar los tiempos, se ejecuta el travelId antes que la creacion del travel -> asegurarse
+                //Rectificar los tiempos, se ejecuta el travelId antes que la creacion del travel -> asegurarse
                 mTakeClientToTask = new TakeClientToTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), countryIdSelected, regionIdSelected, cityIdSelected, addressIdSelected);
                 mTakeClientToTask.execute((Void) null);
                 try {
@@ -112,40 +111,26 @@ public class GoToActivity extends AppCompatActivity {
         });
     }
 
-    public class GetPlacesTask extends AsyncTask<Void, Void, Boolean> {
+    public class GetCountriesTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mUrl;
-        private final Long mId;
-        private final String mTypePlaceId;
-        private final HashMap<String, Long> mPlaces;
-        private final int mAutoCompleteTextView;
-
-        GetPlacesTask(String url, Long id, String typePlaceId, HashMap<String, Long> places, int autoCompleteTextView) {
-            mUrl = url;
-            mId = id;
-            mTypePlaceId = typePlaceId;
-            mPlaces = places;
-            mAutoCompleteTextView = autoCompleteTextView;
+        GetCountriesTask() {
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            HttpGet get;
-            if (mId == 0) {
-                get = new HttpGet(getString(R.string.ip) + mUrl);
-            } else {
-                get = new HttpGet(getString(R.string.ip) + mUrl + mId);
-            }
+            HttpGet get = new HttpGet(getString(R.string.ip) + "countries");
             get.setHeader("content-type", "application/json");
             try {
                 HttpResponse resp = new DefaultHttpClient().execute(get);
                 String respStr = EntityUtils.toString(resp.getEntity());
                 JSONArray respJSON = new JSONArray(respStr);
-                placesString = new String[respJSON.length()];
-                Log.e("GoToActivity", "placesString: " + placesString.length + " " + placesString.toString());
+                countriesString = null;
+                countriesString = new String[respJSON.length()];
+                //Log.e("GoToActivity", "placesString: " + placesString.length);
                 for (int i = 0; i < respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
-                    mPlaces.put(obj.getString("name"), (long) obj.getInt(mTypePlaceId));
+                    countries.put(obj.getString("name"), (long) obj.getInt("countryId"));
+                    countriesString[i] = obj.getString("name");
                 }
             } catch (Exception ex) {
                 Log.e("ServicioRest", "Error!", ex);
@@ -156,80 +141,199 @@ public class GoToActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            createInstanceArrayAdapter(mPlaces, mAutoCompleteTextView);
+            createInstanceArrayAdapterCountries();
         }
 
     }
 
-    private String[] iterator(HashMap places) {
-        Iterator it = places.entrySet().iterator();
-        int i = 0;
-        while (it.hasNext()) {
-            Map.Entry e = (Map.Entry) it.next();
-            placesString[i] = e.getKey().toString();
-            i += 1;
+    public class GetRegionsTask extends AsyncTask<Void, Void, Boolean> {
+
+        private final Long mId;
+
+        GetRegionsTask(Long id) {
+            mId = id;
         }
-        return placesString;
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            HttpGet get = new HttpGet(getString(R.string.ip) + "countries/" + mId);
+
+            get.setHeader("content-type", "application/json");
+            try {
+                HttpResponse resp = new DefaultHttpClient().execute(get);
+                String respStr = EntityUtils.toString(resp.getEntity());
+                JSONArray respJSON = new JSONArray(respStr);
+                regionsString = null;
+                regionsString = new String[respJSON.length()];
+                //Log.e("GoToActivity", "placesString: " + placesString.length);
+                for (int i = 0; i < respJSON.length(); i++) {
+                    JSONObject obj = respJSON.getJSONObject(i);
+                    regions.put(obj.getString("name"), (long) obj.getInt("regionId"));
+                    regionsString[i] = obj.getString("name");
+                }
+            } catch (Exception ex) {
+                Log.e("ServicioRest", "Error!", ex);
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            createInstanceArrayAdapterRegions();
+        }
+
     }
 
-    public void createInstanceArrayAdapter(final HashMap<String, Long> places, int autoCompleteTextView) {
-        ArrayAdapter<String> adapterC = new ArrayAdapter<>
-                (this, android.R.layout.select_dialog_item, iterator(places));
-        //Getting the instance of AutoCompleteTextView
-        AutoCompleteTextView actvC = (AutoCompleteTextView) findViewById(autoCompleteTextView);
-        Log.e("GoToActivity", "createInstanceArrayAdapter");
-        actvC.setThreshold(1);//will start working from first character
-        actvC.setAdapter(adapterC);//setting the adapter data into the AutoCompleteTextView
-        if (flag == 0) {
-            actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    public class GetCitiesTask extends AsyncTask<Void, Void, Boolean> {
+
+        private final Long mId;
+
+        GetCitiesTask(Long id) {
+            mId = id;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            HttpGet get = new HttpGet(getString(R.string.ip) + "regions/" + mId);
+            get.setHeader("content-type", "application/json");
+            try {
+                HttpResponse resp = new DefaultHttpClient().execute(get);
+                String respStr = EntityUtils.toString(resp.getEntity());
+                JSONArray respJSON = new JSONArray(respStr);
+                citiesString = null;
+                citiesString = new String[respJSON.length()];
+                //Log.e("GoToActivity", "placesString: " + placesString.length);
+                for (int i = 0; i < respJSON.length(); i++) {
+                    JSONObject obj = respJSON.getJSONObject(i);
+                    cities.put(obj.getString("name"), (long) obj.getInt("cityId"));
+                    citiesString[i] = obj.getString("name");
+                }
+            } catch (Exception ex) {
+                Log.e("ServicioRest", "Error!", ex);
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            createInstanceArrayAdapterCities();
+        }
+
+    }
+
+    public class GetAddressesTask extends AsyncTask<Void, Void, Boolean> {
+
+        private final Long mId;
+
+        GetAddressesTask(Long id) {
+            mId = id;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            HttpGet get = new HttpGet(getString(R.string.ip) + "cities/" + mId);
+
+            get.setHeader("content-type", "application/json");
+            try {
+                HttpResponse resp = new DefaultHttpClient().execute(get);
+                String respStr = EntityUtils.toString(resp.getEntity());
+                JSONArray respJSON = new JSONArray(respStr);
+                addressesString = null;
+                addressesString = new String[respJSON.length()];
+                //Log.e("GoToActivity", "placesString: " + placesString.length);
+                for (int i = 0; i < respJSON.length(); i++) {
+                    JSONObject obj = respJSON.getJSONObject(i);
+                    addresses.put(obj.getString("name"), (long) obj.getInt("addressId"));
+                    addressesString[i] = obj.getString("name");
+                }
+            } catch (Exception ex) {
+                Log.e("ServicioRest", "Error!", ex);
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            createInstanceArrayAdapterAddresses();
+        }
+
+    }
+
+    public void createInstanceArrayAdapterCountries() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>
+                (this, android.R.layout.select_dialog_item, countriesString);
+        actvCountries.setThreshold(1);//will start working from first character
+        actvCountries.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
+
+            actvCountries.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Log.e("GoToActivity", "createInstanceArrayAdapter -> Flag: " + flag);
+                    actvRegions.setText("");
+                    actvCities.setText("");
+                    actvAddresses.setText("");
                     countryStrSelected = (String) parent.getItemAtPosition(position);
-                    countryIdSelected = places.get(countryStrSelected);
-                    mGetPlacesTask = new GetPlacesTask("countries/", countryIdSelected, "regionId", regions, R.id.autoCompleteTextViewRegions);
-                    flag = 1;
-                    mGetPlacesTask.execute((Void) null);
+                    countryIdSelected = countries.get(countryStrSelected);
+                    mGetRegionsTask = new GetRegionsTask(countryIdSelected);
+                    mGetRegionsTask.execute((Void) null);
                 }
             });
-        }
-        if (flag == 1) {
-            actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+    }
+
+    public void createInstanceArrayAdapterRegions() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>
+                (this, android.R.layout.select_dialog_item, regionsString);
+        actvRegions.setThreshold(1);//will start working from first character
+        actvRegions.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
+
+            actvRegions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Log.e("GoToActivity", "createInstanceArrayAdapter -> Flag: " + flag);
+                    actvCities.setText("");
+                    actvAddresses.setText("");
                     regionStrSelected = (String) parent.getItemAtPosition(position);
-                    regionIdSelected = places.get(regionStrSelected);
-                    mGetPlacesTask = new GetPlacesTask("regions/", regionIdSelected, "cityId", cities, R.id.autoCompleteTextViewCities);
-                    flag = 2;
-                    mGetPlacesTask.execute((Void) null);
+                    regionIdSelected = regions.get(regionStrSelected);
+                    mGetCitiesTask = new GetCitiesTask(regionIdSelected);
+                    mGetCitiesTask.execute((Void) null);
                 }
             });
-        }
-        if (flag == 2) {
-            actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    }
+
+    public void createInstanceArrayAdapterCities() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>
+                (this, android.R.layout.select_dialog_item, citiesString);
+        actvCities.setThreshold(1);//will start working from first character
+        actvCities.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
+
+            actvCities.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Log.e("GoToActivity", "createInstanceArrayAdapter -> Flag: " + flag);
+                    actvAddresses.setText("");
                     cityStrSelected = (String) parent.getItemAtPosition(position);
-                    cityIdSelected = places.get(cityStrSelected);
-                    mGetPlacesTask = new GetPlacesTask("cities/", cityIdSelected, "addressId", addresses, R.id.autoCompleteTextViewAddresses);
-                    flag = 3;
-                    mGetPlacesTask.execute((Void) null);
+                    cityIdSelected = cities.get(cityStrSelected);
+                    mGetAddressesTask = new GetAddressesTask(cityIdSelected);
+                    mGetAddressesTask.execute((Void) null);
                 }
             });
-        }
-        if (flag == 3) {
-            actvC.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+    }
+
+    public void createInstanceArrayAdapterAddresses() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>
+                (this, android.R.layout.select_dialog_item, addressesString);
+        actvAddresses.setThreshold(1);//will start working from first character
+        actvAddresses.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
+            actvAddresses.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Log.e("GoToActivity", "createInstanceArrayAdapter -> Flag: " + flag);
                     addressStrSelected = (String) parent.getItemAtPosition(position);
-                    addressIdSelected = places.get(addressStrSelected);
+                    addressIdSelected = addresses.get(addressStrSelected);
                     Log.e("Goto", addressStrSelected + ", " + cityStrSelected + ", " + regionStrSelected + ", " + countryStrSelected);
                 }
             });
-        }
     }
 
     public class TakeClientToTask extends AsyncTask<Void, Void, Boolean> {

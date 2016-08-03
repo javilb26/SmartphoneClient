@@ -48,7 +48,8 @@ public class FutureTravelOptionsActivity extends AppCompatActivity {
         mGoToButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String url = getIntent().getStringExtra("originAddressStr") + ", " + getIntent().getStringExtra("originCityStr") + ", " + getIntent().getStringExtra("originRegionStr") + ", " + getIntent().getStringExtra("originCountryStr");
+                //TODO Habria que mirar como ir primero al origen y despues al destino
+                String url = getIntent().getStringExtra("destinationAddressStr") + ", " + getIntent().getStringExtra("destinationCityStr") + ", " + getIntent().getStringExtra("destinationRegionStr") + ", " + getIntent().getStringExtra("destinationCountryStr");
                 Log.e("GoTo", url);
                 //TODO Rectificar los tiempos, se ejecuta el travelId antes que la creacion del travel -> asegurarse
                 mTakeClientToFromFutureTravelTask = new TakeClientToFromFutureTravelTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0),

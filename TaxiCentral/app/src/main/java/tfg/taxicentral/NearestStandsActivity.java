@@ -45,6 +45,8 @@ public class NearestStandsActivity extends ListActivity {
         while (nearestStandsTaskFlag == 0) {
 
         }
+        
+
         if (notEmptyStandsFlag == 0) {
             Toast.makeText(getApplicationContext(), "No stands", Toast.LENGTH_SHORT).show();
             finish();

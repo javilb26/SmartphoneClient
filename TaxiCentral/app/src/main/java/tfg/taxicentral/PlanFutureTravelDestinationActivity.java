@@ -1,5 +1,7 @@
 package tfg.taxicentral;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +11,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
@@ -21,11 +26,13 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class PlanFutureTravelDestinationActivity extends AppCompatActivity {
+public class PlanFutureTravelDestinationActivity extends AppCompatActivity implements
+        View.OnClickListener {
 
     private int flag = 25;
     private String[] placesString;
@@ -34,6 +41,11 @@ public class PlanFutureTravelDestinationActivity extends AppCompatActivity {
     private GetPlacesTask mGetPlacesTask = null;
     private PlanFutureTravelTask mPlanFutureTravelTask = null;
     private HashMap<String, Long> countries = new HashMap<>(), regions = new HashMap<>(), cities = new HashMap<>(), addresses = new HashMap<>();
+
+    Button btnDatePicker, btnTimePicker;
+    EditText txtDate, txtTime;
+    private int mYear, mMonth, mDay, mHour, mMinute;
+    private String date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,11 +87,11 @@ public class PlanFutureTravelDestinationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //String url = placesStrSelected[3] + ", " + placesStrSelected[2] + ", " + placesStrSelected[1] + ", " + placesStrSelected[0];
-
+                date = mDay + "-" + mMonth + "-" + mYear + " " + mHour + ":" + mMinute;
                 //TODO Rectificar los tiempos, se ejecuta el travelId antes que la creacion del travel -> asegurarse
                 mPlanFutureTravelTask = new PlanFutureTravelTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0),
                         getIntent().getLongExtra("placesIdSelectedOrigin0",0), getIntent().getLongExtra("placesIdSelectedOrigin1",0), getIntent().getLongExtra("placesIdSelectedOrigin2",0),
-                        getIntent().getLongExtra("placesIdSelectedOrigin3",0), placesIdSelected[0], placesIdSelected[1], placesIdSelected[2], placesIdSelected[3]);
+                        getIntent().getLongExtra("placesIdSelectedOrigin3",0), placesIdSelected[0], placesIdSelected[1], placesIdSelected[2], placesIdSelected[3], date);
                 mPlanFutureTravelTask.execute((Void) null);
                 try {
                     Thread.sleep(1000);
@@ -90,6 +102,61 @@ public class PlanFutureTravelDestinationActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        btnDatePicker=(Button)findViewById(R.id.btn_date);
+        btnTimePicker=(Button)findViewById(R.id.btn_time);
+        txtDate=(EditText)findViewById(R.id.in_date);
+        txtTime=(EditText)findViewById(R.id.in_time);
+
+        btnDatePicker.setOnClickListener(this);
+        btnTimePicker.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        if (v == btnDatePicker) {
+
+            // Get Current Date
+            final Calendar c = Calendar.getInstance();
+            mYear = c.get(Calendar.YEAR);
+            mMonth = c.get(Calendar.MONTH);
+            mDay = c.get(Calendar.DAY_OF_MONTH);
+
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                    new DatePickerDialog.OnDateSetListener() {
+
+                        @Override
+                        public void onDateSet(DatePicker view, int year,
+                                              int monthOfYear, int dayOfMonth) {
+
+                            txtDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+
+                        }
+                    }, mYear, mMonth, mDay);
+            datePickerDialog.show();
+        }
+        if (v == btnTimePicker) {
+
+            // Get Current Time
+            final Calendar c = Calendar.getInstance();
+            mHour = c.get(Calendar.HOUR_OF_DAY);
+            mMinute = c.get(Calendar.MINUTE);
+
+            // Launch Time Picker Dialog
+            TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                    new TimePickerDialog.OnTimeSetListener() {
+
+                        @Override
+                        public void onTimeSet(TimePicker view, int hourOfDay,
+                                              int minute) {
+
+                            txtTime.setText(hourOfDay + ":" + minute);
+                        }
+                    }, mHour, mMinute, false);
+            timePickerDialog.show();
+        }
     }
 
     public class GetPlacesTask extends AsyncTask<Void, Void, Boolean> {
@@ -210,8 +277,9 @@ public class PlanFutureTravelDestinationActivity extends AppCompatActivity {
     public class PlanFutureTravelTask extends AsyncTask<Void, Void, Boolean> {
 
         private final Long mTaxiId, mOriginCountryId, mOriginRegionId, mOriginCityId, mOriginAddressId, mDestinationCountryId, mDestinationRegionId, mDestinationCityId, mDestinationAddressId;
+        private final String mDate;
 
-        PlanFutureTravelTask(Long taxiId, Long originCountryId, Long originRegionId, Long originCityId, Long originAddressId, Long destinationCountryId, Long destinationRegionId, Long destinationCityId, Long destinationAddressId) {
+        PlanFutureTravelTask(Long taxiId, Long originCountryId, Long originRegionId, Long originCityId, Long originAddressId, Long destinationCountryId, Long destinationRegionId, Long destinationCityId, Long destinationAddressId, String date) {
             mTaxiId = taxiId;
             mOriginCountryId = originCountryId;
             mOriginRegionId = originRegionId;
@@ -221,6 +289,7 @@ public class PlanFutureTravelDestinationActivity extends AppCompatActivity {
             mDestinationRegionId = destinationRegionId;
             mDestinationCityId = destinationCityId;
             mDestinationAddressId = destinationAddressId;
+            mDate = date;
         }
 
         @Override
@@ -241,6 +310,7 @@ public class PlanFutureTravelDestinationActivity extends AppCompatActivity {
                 object.put("destinationRegionId", mDestinationRegionId);
                 object.put("destinationCityId", mDestinationCityId);
                 object.put("destinationAddressId", mDestinationAddressId);
+                object.put("date", mDate);
                 StringEntity entity = new StringEntity(object.toString());
                 post.setEntity(entity);
                 HttpResponse resp = httpClient.execute(post);

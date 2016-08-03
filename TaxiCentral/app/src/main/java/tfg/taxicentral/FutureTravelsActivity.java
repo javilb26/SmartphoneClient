@@ -17,6 +17,9 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class FutureTravelsActivity extends ListActivity {
 
     private FutureTravelsTask mFutureTravelsTask = null;
@@ -129,7 +132,10 @@ public class FutureTravelsActivity extends ListActivity {
                     JSONObject destinationRegion = obj.getJSONObject("destinationRegion");
                     JSONObject destinationCity = obj.getJSONObject("destinationCity");
                     JSONObject destinationAddress = obj.getJSONObject("destinationAddress");
-                    futureTravels[i] = obj.getLong("futureTravelId") + " - '" + obj.getString("date") + "'" + " - '" + originCountry.getString("name") + "'" + " - '" + originRegion.getString("name") + "'" + " - '" + originCity.getString("name") + "'" + " - '" + originAddress.getString("name") + "'" + " - '" + destinationCountry.getString("name") + "'" + " - '" + destinationRegion.getString("name") + "'" + " - '" + destinationCity.getString("name") + "'" + " - '" + destinationAddress.getString("name") + "'";
+                    Calendar dateAsCalendar = Calendar.getInstance();
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+                    dateAsCalendar.setTimeInMillis(Long.parseLong(obj.getString("date")));
+                    futureTravels[i] = obj.getLong("futureTravelId") + " - '" + sdf.format(dateAsCalendar.getTime()) + "'" + " - '" + originCountry.getString("name") + "'" + " - '" + originRegion.getString("name") + "'" + " - '" + originCity.getString("name") + "'" + " - '" + originAddress.getString("name") + "'" + " - '" + destinationCountry.getString("name") + "'" + " - '" + destinationRegion.getString("name") + "'" + " - '" + destinationCity.getString("name") + "'" + " - '" + destinationAddress.getString("name") + "'";
 
                     //Log.e("NearestStands","Stand: " + stand[i].toString());
                     futureTravelId[i] = obj.getLong("futureTravelId");

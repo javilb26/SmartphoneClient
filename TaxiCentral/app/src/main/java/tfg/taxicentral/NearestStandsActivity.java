@@ -45,35 +45,26 @@ public class NearestStandsActivity extends ListActivity {
         while (nearestStandsTaskFlag == 0) {
 
         }
-        
-
         if (notEmptyStandsFlag == 0) {
             Toast.makeText(getApplicationContext(), "No stands", Toast.LENGTH_SHORT).show();
             finish();
         } else {
+            int i=0;
+            for (i=0; i<stand.length; i++) {
+                numTaxisStandTaskFlag = 0;
+                mNumTaxisStandTask = new NumTaxisStandTask(new Long(stand[i].substring(0,1)));
+                mNumTaxisStandTask.execute((Void) null);
+                while (numTaxisStandTaskFlag == 0) {
+                }
+                if (numTaxis.compareTo("")==0) {
+                    numTaxis = "0";
+                }
+                stand[i]+= " - " + numTaxis + " taxis";
+            }
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                     android.R.layout.simple_list_item_1, stand);
             setListAdapter(adapter);
         }
-    }
-
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        numTaxisStandTaskFlag = 0;
-        Log.e("NearestStandsActivity", "item pulsado");
-        String item = (String) getListAdapter().getItem(position);
-        Log.e("NearestStandsActivity", item.substring(0,1));
-        mNumTaxisStandTask = new NumTaxisStandTask(new Long(item.substring(0,1)));
-        mNumTaxisStandTask.execute((Void) null);
-        //TODO Arreglar actualizacion
-        while (numTaxisStandTaskFlag == 0) {
-
-        }
-        if (numTaxis.compareTo("")==0) {
-            numTaxis = "0";
-        }
-        Toast.makeText(getApplicationContext(), numTaxis, Toast.LENGTH_SHORT).show();
-        //super.finish();
     }
 
     public class NearestStandsTask extends AsyncTask<Void, Void, Boolean> {

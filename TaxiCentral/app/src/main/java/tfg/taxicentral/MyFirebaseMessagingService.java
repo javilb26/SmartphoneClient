@@ -6,11 +6,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import java.util.Map;
 
@@ -20,6 +27,8 @@ import java.util.Map;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
+    private DeclineTask declineTask = null;
+    private Thread thread;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -50,15 +59,61 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("TaxiCentral")
-                .setContentText("Nuevo viaje: 5 segundos para aceptarlo")
+                .setContentText("Nuevo viaje: 10 segundos para aceptarlo")
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
 
-        NotificationManager notificationManager =
+        final NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(0, notificationBuilder.build());
+
+        thread = new Thread(){
+            @Override
+            public void run(){
+                try {
+                    synchronized(this){
+                        wait(10000);
+                    }
+                } catch(InterruptedException ex){
+                }
+                notificationManager.cancel(0);
+                if (declineTask != null) {
+                    return;
+                }
+                declineTask = new DeclineTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0));
+                declineTask.execute((Void) null);
+            }
+        };
+        thread.start();
+
+    }
+
+    public class DeclineTask extends AsyncTask<Void, Void, Boolean> {
+
+        private final Long mTaxiId;
+
+        DeclineTask(Long taxiId) {
+            mTaxiId = taxiId;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            HttpPut put = new HttpPut(getString(R.string.ip) + "taxis/" + mTaxiId + "/decline");
+            put.setHeader("content-type", "application/json");
+            try {
+                HttpResponse resp = new DefaultHttpClient().execute(put);
+                String respStr = EntityUtils.toString(resp.getEntity());
+                if (!respStr.equals("true"))
+                    return false;
+            } catch (Exception ex) {
+                Log.e("ServicioRest", "Error!", ex);
+                return false;
+            }
+            return true;
+        }
+
     }
 
 }

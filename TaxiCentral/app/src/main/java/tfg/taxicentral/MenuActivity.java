@@ -14,7 +14,7 @@ public class MenuActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, new String[]{"Navigation", "Go to", "Actual state", "Plan future travel",
-                "Planned travels", "Cancel current travel", "History", "View taxi stands", "Locate"});
+                "Planned travels", "Current travel info", "Cancel current travel", "History", "View taxi stands", "Locate"});
         setListAdapter(adapter);
     }
 
@@ -37,6 +37,9 @@ public class MenuActivity extends ListActivity {
                 break;
             case "Planned travels":
                 intent = new Intent(getApplicationContext(), FutureTravelsActivity.class);
+                break;
+            case "Current travel info":
+                intent = new Intent(getApplicationContext(), CurrentTravelActivity.class);
                 break;
             case "Cancel current travel":
                 intent = new Intent(getApplicationContext(), CancelTravelActivity.class);

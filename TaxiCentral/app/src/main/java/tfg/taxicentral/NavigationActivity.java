@@ -65,6 +65,8 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     int pathFlag = 0;
     String path2 = "";
     Boolean historyPath;
+    LatLng oldStart;
+    boolean firstTime = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -200,11 +202,22 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     @Override
     public void onLocationChanged(Location location) {
         start = new LatLng(location.getLatitude(), location.getLongitude());
+        Log.e("Start nuevo", start.latitude + ", " + start.longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(start));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(16));
         Log.d("NavigationActivity", "onLocationChanged");
-        mUpdatePositionTaxiTask = new UpdatePositionTaxiTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), start.latitude, start.longitude);
-        mUpdatePositionTaxiTask.execute((Void) null);
+        float[] distanceBetweenStarts = new float[1];
+        if (oldStart!=null) {
+            Location.distanceBetween(start.latitude, start.longitude, oldStart.latitude, oldStart.longitude, distanceBetweenStarts);
+            Log.e("NavigationActivity", "Distance: " + distanceBetweenStarts[0]);
+        }
+        if ((distanceBetweenStarts[0]>=5)||(firstTime)) {
+            oldStart = start;
+            firstTime = false;
+            Log.e("Start viejo", oldStart.latitude + ", " + oldStart.longitude);
+            mUpdatePositionTaxiTask = new UpdatePositionTaxiTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), start.latitude, start.longitude);
+            mUpdatePositionTaxiTask.execute((Void) null);
+        }
         if (routing) {
             if (firstStart == null) {
                 firstStart = start;

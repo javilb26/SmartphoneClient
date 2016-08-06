@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -199,15 +200,19 @@ public class LoginActivity extends AppCompatActivity {
             try
             {
                 JSONObject object = new JSONObject();
+
+                byte[] data = mPassword.getBytes("UTF-8");
+                String base64 = Base64.encodeToString(data, Base64.DEFAULT);
+                Log.e("Login", "Base64: " + base64);
                 object.put("taxiId", mTaxiId);
-                object.put("password", mPassword);
+                object.put("password", base64);
                 StringEntity entity = new StringEntity(object.toString());
                 post.setEntity(entity);
                 HttpResponse resp = httpClient.execute(post);
                 String respStr = EntityUtils.toString(resp.getEntity());
                 SharedPreferences.Editor editorSharedPreferences = getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).edit();
                 editorSharedPreferences.putLong("taxiId", mTaxiId);
-                editorSharedPreferences.putString("password", mPassword);
+                editorSharedPreferences.putString("password", base64);
                 editorSharedPreferences.commit();
                 Log.e("LoginActivity", "Respuesta del servidor: " + respStr);
                 if (respStr.substring(0,1).compareTo("{")==0) {

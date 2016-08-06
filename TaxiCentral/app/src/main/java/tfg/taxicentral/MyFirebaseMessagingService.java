@@ -15,9 +15,12 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.Map;
 
@@ -29,6 +32,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMsgService";
     private DeclineTask declineTask = null;
     private Thread thread;
+    private TaxiTask mTaxiTask = null;
+    private int taxiFlag = 0;
+    private String actualState = "";
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -52,7 +58,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         intent.putExtra("city", parts[3].substring(parts[3].indexOf(":")+2, parts[3].length()-1));
         intent.putExtra("address", parts[4].substring(parts[4].indexOf(":")+2, parts[4].length()-2));
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
+        final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -78,12 +84,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     }
                 } catch(InterruptedException ex){
                 }
-                notificationManager.cancel(0);
-                if (declineTask != null) {
-                    return;
+                mTaxiTask = new TaxiTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0));
+                mTaxiTask.execute((Void) null);
+                while (taxiFlag == 0) {
                 }
-                declineTask = new DeclineTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0));
-                declineTask.execute((Void) null);
+                if (actualState.compareTo("AVAILABLE")==0) {
+                    notificationManager.cancel(0);
+                    if (declineTask != null) {
+                        return;
+                    }
+                    declineTask = new DeclineTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0));
+                    declineTask.execute((Void) null);
+                }
             }
         };
         thread.start();
@@ -107,6 +119,33 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 String respStr = EntityUtils.toString(resp.getEntity());
                 if (!respStr.equals("true"))
                     return false;
+            } catch (Exception ex) {
+                Log.e("ServicioRest", "Error!", ex);
+                return false;
+            }
+            return true;
+        }
+
+    }
+
+    public class TaxiTask extends AsyncTask<Void, Void, Boolean> {
+
+        private final Long mTaxiId;
+
+        TaxiTask(Long taxiId) {
+            mTaxiId = taxiId;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            HttpGet get = new HttpGet(getString(R.string.ip) + "taxis/" + mTaxiId);
+            get.setHeader("content-type", "application/json");
+            try {
+                HttpResponse resp = new DefaultHttpClient().execute(get);
+                String respStr = EntityUtils.toString(resp.getEntity());
+                JSONObject obj = new JSONObject(respStr);
+                actualState = obj.getString("actualState");
+                taxiFlag = 1;
             } catch (Exception ex) {
                 Log.e("ServicioRest", "Error!", ex);
                 return false;

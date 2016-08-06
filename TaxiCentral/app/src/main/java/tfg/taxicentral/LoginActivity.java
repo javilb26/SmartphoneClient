@@ -46,6 +46,8 @@ public class LoginActivity extends AppCompatActivity {
     private View mProgressView;
     private View mLoginFormView;
 
+    boolean resul = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -189,7 +191,7 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            boolean resul = true;
+
             HttpClient httpClient = new DefaultHttpClient();
             HttpPost post = new HttpPost(getString(R.string.ip)+"login");
 
@@ -203,31 +205,22 @@ public class LoginActivity extends AppCompatActivity {
                 post.setEntity(entity);
                 HttpResponse resp = httpClient.execute(post);
                 String respStr = EntityUtils.toString(resp.getEntity());
-                if(!respStr.equals("true"))
-                    resul = false;
                 SharedPreferences.Editor editorSharedPreferences = getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).edit();
-                //if (chkGuardar.isChecked()) {
-                    //editorSharedPreferences.clear();
-                    editorSharedPreferences.putLong("taxiId", mTaxiId);
-                    editorSharedPreferences.putString("password", mPassword);
-                    editorSharedPreferences.commit();
-
-                //} else {
-                //    editor.clear();
-                //    editor.commit();
-                //}
-                if (getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getInt("refreshedTokenFlag",0)==1) {
-                    sendRegistrationToServer(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getString("token",null));
-                    Log.e("Entro en firebase","desde login");
+                editorSharedPreferences.putLong("taxiId", mTaxiId);
+                editorSharedPreferences.putString("password", mPassword);
+                editorSharedPreferences.commit();
+                Log.e("LoginActivity", "Respuesta del servidor: " + respStr);
+                if (respStr.substring(0,1).compareTo("{")==0) {
+                    resul = true;
                 }
-
+                Log.e("LoginActivity", "Resul: " + resul);
             }
             catch(Exception ex)
             {
                 Log.e("ServicioRest","Error!", ex);
                 resul = false;
             }
-            navigatetoMenuActivity();
+
             return resul;
         }
 
@@ -236,7 +229,12 @@ public class LoginActivity extends AppCompatActivity {
             mAuthTask = null;
             showProgress(false);
 
-            if (success) {
+            if (resul) {
+                if (getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getInt("refreshedTokenFlag",0)==1) {
+                    sendRegistrationToServer(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getString("token",null));
+                    Log.e("Entro en firebase","desde login");
+                }
+                navigatetoMenuActivity();
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));

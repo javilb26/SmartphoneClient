@@ -160,7 +160,6 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
                 }
                 firstPoint = true;
             }
-            Log.e("JODER", rectOptions.getPoints().toString());
             // Get back the mutable Polyline
             Polyline polyline = mMap.addPolyline(rectOptions);
         } else {
@@ -172,7 +171,7 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
                 //                                          int[] grantResults)
                 // to handle the case where the user grants the permission. See the documentation
                 // for ActivityCompat#requestPermissions for more details.
-                Toast.makeText(getApplicationContext(), "Debe garantizar los permisos de localizacion para funcionar", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},1);
                 return;
             }
             mMap.setMyLocationEnabled(true);

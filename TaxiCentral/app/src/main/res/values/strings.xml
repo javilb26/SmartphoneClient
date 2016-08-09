@@ -1,10 +1,7 @@
 <resources>
     <string name="app_name">TaxiCentral</string>
 
-    <!--<string name="ip">http://10.0.2.2:8080/SpringMVCHibernate/</string>-->
-    <string name="ip">http://192.168.1.35:8080/SpringMVCHibernate/</string>
-    <!--<string name="ip">http://192.168.0.101:8080/SpringMVCHibernate/</string>-->
-
+    <string name="ip">http://192.168.1.35:8080/TaxiCentral/</string>
 
     <!-- Strings related to login -->
     <string name="prompt_taxiId">Taxi ID</string>

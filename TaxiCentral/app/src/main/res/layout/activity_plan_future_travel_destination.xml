@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="DestinationCountries: " />
+        android:text="Destination -> Country: " />
 
     <AutoCompleteTextView
         android:id="@+id/autoCompleteTextViewDestinationCountries"
@@ -38,7 +38,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/autoCompleteTextViewDestinationCountries"
-        android:text="DestinationRegions: " />
+        android:text="Destination -> Region: " />
 
     <AutoCompleteTextView
         android:id="@+id/autoCompleteTextViewDestinationRegions"
@@ -58,7 +58,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/autoCompleteTextViewDestinationRegions"
-        android:text="DestinationCities: " />
+        android:text="Destination -> City: " />
 
     <AutoCompleteTextView
         android:id="@+id/autoCompleteTextViewDestinationCities"
@@ -78,7 +78,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/autoCompleteTextViewDestinationCities"
-        android:text="DestinationAddresses: " />
+        android:text="Destination -> Address: " />
 
     <AutoCompleteTextView
         android:id="@+id/autoCompleteTextViewDestinationAddresses"
@@ -102,7 +102,7 @@
         android:textStyle="bold"/>
 
     <EditText
-        android:layout_width="200dp"
+        android:layout_width="240dp"
         android:layout_height="wrap_content"
         android:id="@+id/in_date"
         android:layout_marginTop="10dp"
@@ -121,7 +121,7 @@
         android:layout_toEndOf="@+id/in_date" />
 
     <EditText
-        android:layout_width="200dp"
+        android:layout_width="240dp"
         android:layout_height="wrap_content"
         android:id="@+id/in_time"
         android:layout_marginTop="10dp"

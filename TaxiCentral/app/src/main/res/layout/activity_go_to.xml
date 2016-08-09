@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="Countries: " />
+        android:text="Country: " />
 
     <AutoCompleteTextView
         android:id="@+id/autoCompleteTextViewCountries"
@@ -32,7 +32,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/autoCompleteTextViewCountries"
-        android:text="Regions: " />
+        android:text="Region: " />
 
     <AutoCompleteTextView
         android:id="@+id/autoCompleteTextViewRegions"
@@ -52,7 +52,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/autoCompleteTextViewRegions"
-        android:text="Cities: " />
+        android:text="City: " />
 
     <AutoCompleteTextView
         android:id="@+id/autoCompleteTextViewCities"
@@ -72,7 +72,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/autoCompleteTextViewCities"
-        android:text="Addresses: " />
+        android:text="Address: " />
 
     <AutoCompleteTextView
         android:id="@+id/autoCompleteTextViewAddresses"

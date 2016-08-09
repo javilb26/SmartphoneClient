@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="OriginCountries: " />
+        android:text="Origin -> Country: " />
 
     <AutoCompleteTextView
         android:id="@+id/autoCompleteTextViewOriginCountries"
@@ -38,7 +38,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/autoCompleteTextViewOriginCountries"
-        android:text="OriginRegions: " />
+        android:text="Origin -> Region: " />
 
     <AutoCompleteTextView
         android:id="@+id/autoCompleteTextViewOriginRegions"
@@ -58,7 +58,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/autoCompleteTextViewOriginRegions"
-        android:text="OriginCities: " />
+        android:text="Origin -> City: " />
 
     <AutoCompleteTextView
         android:id="@+id/autoCompleteTextViewOriginCities"
@@ -78,7 +78,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/autoCompleteTextViewOriginCities"
-        android:text="OriginAddresses: " />
+        android:text="Origin -> Address: " />
 
     <AutoCompleteTextView
         android:id="@+id/autoCompleteTextViewOriginAddresses"

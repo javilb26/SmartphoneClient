@@ -88,7 +88,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 mTaxiTask.execute((Void) null);
                 while (taxiFlag == 0) {
                 }
-                if (actualState.compareTo("AVAILABLE")==0) {
+                if ((actualState.compareTo("AVAILABLE")==0)||(actualState.compareTo("INSTAND")==0)) {
                     notificationManager.cancel(0);
                     if (declineTask != null) {
                         return;

@@ -19,7 +19,6 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 
 public class HistoryActivity extends ListActivity {
 
@@ -30,6 +29,7 @@ public class HistoryActivity extends ListActivity {
     String numTaxis;
     int historyTaskFlag = 0, numTaxisStandTaskFlag = 0;
     int notEmptyHistoryFlag = 0;
+    String[] history2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +52,17 @@ public class HistoryActivity extends ListActivity {
             Toast.makeText(getApplicationContext(), "No travels", Toast.LENGTH_SHORT).show();
             finish();
         } else {
+            history2 = new String[history.length];
+            String historyO2;
+            int i = 0;
+            for (String historyO: history) {
+                String[] historyOaux = historyO.split("-");
+                historyO2 = "ID: " + historyOaux[0] + "\n" + "Date: " + historyOaux[1]+"-"+historyOaux[2]+"-"+historyOaux[3] + "\n" + "Origin -> Country: " + historyOaux[4] + "\n" + "Origin -> Region: " + historyOaux[5] + "\n" + "Origin -> City: " + historyOaux[6] + "\n" + "Origin -> Address: " + historyOaux[7] + "\n" + "Destination -> Country: " + historyOaux[8] + "\n" + "Destination -> Region: " + historyOaux[9] + "\n" + "Destination -> City: " + historyOaux[10] + "\n" + "Destination -> Address: " + historyOaux[11] + "\n";
+                history2[i] = historyO2;
+                i++;
+            }
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                    android.R.layout.simple_list_item_1, history);
+                    android.R.layout.simple_list_item_1, history2);
             setListAdapter(adapter);
         }
 
@@ -61,12 +70,9 @@ public class HistoryActivity extends ListActivity {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        Log.e("HistoryActivity", "item pulsado");
         String item = (String) getListAdapter().getItem(position);
-        Log.e("HistoryActivity", item);
         Intent intent = new Intent(getApplicationContext(), NavigationActivity.class);
         intent.putExtra("path", paths[position]);
-        Log.e("path", paths[position]);
         intent.putExtra("historyPath", true);
         startActivity(intent);
     }
@@ -91,8 +97,6 @@ public class HistoryActivity extends ListActivity {
                 paths = new String[999999];
                 for (int i = 0; i < respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
-                    //Log.e("HistoryActivity",obj.toString());
-                    //TODO mirar si lo ideal seria que teniendo un array de ids (manteniendo la misma i que para stand apareciera ya en view taxi stands el numero de taxis en parada
                     JSONObject originCountry = obj.getJSONObject("originCountry");
                     JSONObject originRegion = obj.getJSONObject("originRegion");
                     JSONObject originCity = obj.getJSONObject("originCity");
@@ -110,7 +114,6 @@ public class HistoryActivity extends ListActivity {
                     history[i] = obj.getLong("travelId") + " - '" + sdf.format(dateAsCalendar.getTime()) + "'" + " - '" + originCountry.getString("name") + "'" + " - '" + originRegion.getString("name") + "'" + " - '" + originCity.getString("name") + "'" + " - '" + originAddress.getString("name") + "'" + " - '" + destinationCountry.getString("name") + "'" + " - '" + destinationRegion.getString("name") + "'" + " - '" + destinationCity.getString("name") + "'" + " - '" + destinationAddress.getString("name") + "'" + " - '" + obj.getLong("distance") + "'"/* + " - '" + originPoint.getString("coordinates") + "'" + " - '" + destinationPoint.getString("coordinates") + "'" + " - '" + obj.getString("path") + "'"*/;
                     paths[i]= path.getString("coordinates");
                     notEmptyHistoryFlag = 1;
-                    //Log.e("NearestStands","Stand: " + stand[i].toString());
                 }
                 historyTaskFlag = 1;
             } catch (Exception ex) {
@@ -121,30 +124,5 @@ public class HistoryActivity extends ListActivity {
         }
 
     }
-/*
-    public class NumTaxisStandTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final Long mStandId;
-
-        NumTaxisStandTask(Long standId) {
-            mStandId = standId;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            HttpGet get = new HttpGet(getString(R.string.ip) + "stands/" + mStandId + "/numtaxis");
-            get.setHeader("content-type", "application/json");
-            try {
-                HttpResponse resp = new DefaultHttpClient().execute(get);
-                numTaxis = EntityUtils.toString(resp.getEntity());
-                numTaxisStandTaskFlag = 1;
-            } catch (Exception ex) {
-                Log.e("ServicioRest", "Error!", ex);
-                return false;
-            }
-            return true;
-        }
-
-    }
-*/
 }

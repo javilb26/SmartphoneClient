@@ -131,12 +131,10 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
     private boolean isTaxiIdValid(Long taxiId) {
-        //TODO: Replace this with your own logic
         return (taxiId.intValue() >= 1) && (taxiId.intValue() <= 99999);
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
         return password.length() >= 4;
     }
 
@@ -192,18 +190,14 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-
             HttpClient httpClient = new DefaultHttpClient();
             HttpPost post = new HttpPost(getString(R.string.ip)+"login");
-
             post.setHeader("content-type", "application/json");
             try
             {
                 JSONObject object = new JSONObject();
-
                 byte[] data = mPassword.getBytes("UTF-8");
                 String base64 = Base64.encodeToString(data, Base64.DEFAULT);
-                Log.e("Login", "Base64: " + base64);
                 object.put("taxiId", mTaxiId);
                 object.put("password", base64);
                 StringEntity entity = new StringEntity(object.toString());
@@ -214,11 +208,9 @@ public class LoginActivity extends AppCompatActivity {
                 editorSharedPreferences.putLong("taxiId", mTaxiId);
                 editorSharedPreferences.putString("password", base64);
                 editorSharedPreferences.commit();
-                Log.e("LoginActivity", "Respuesta del servidor: " + respStr);
                 if (respStr.substring(0,1).compareTo("{")==0) {
                     resul = true;
                 }
-                Log.e("LoginActivity", "Resul: " + resul);
             }
             catch(Exception ex)
             {
@@ -237,7 +229,6 @@ public class LoginActivity extends AppCompatActivity {
             if (resul) {
                 if (getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getInt("refreshedTokenFlag",0)==1) {
                     sendRegistrationToServer(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getString("token",null));
-                    Log.e("Entro en firebase","desde login");
                 }
                 navigatetoMenuActivity();
                 finish();
@@ -256,8 +247,6 @@ public class LoginActivity extends AppCompatActivity {
 
     public void navigatetoMenuActivity(){
         Intent menuIntent = new Intent(getApplicationContext(),MenuActivity.class);
-        //menuIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        //Este flag se carga la sesion?
         startActivity(menuIntent);
     }
 

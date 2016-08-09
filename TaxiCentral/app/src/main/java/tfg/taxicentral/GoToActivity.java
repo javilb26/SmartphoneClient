@@ -24,9 +24,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 public class GoToActivity extends AppCompatActivity {
 
@@ -81,8 +79,6 @@ public class GoToActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String url = addressStrSelected + ", " + cityStrSelected + ", " + regionStrSelected + ", " + countryStrSelected;
-                Log.e("GoTo", url);
-                //Rectificar los tiempos, se ejecuta el travelId antes que la creacion del travel -> asegurarse
                 mTakeClientToTask = new TakeClientToTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), countryIdSelected, regionIdSelected, cityIdSelected, addressIdSelected);
                 mTakeClientToTask.execute((Void) null);
                 try {
@@ -126,7 +122,6 @@ public class GoToActivity extends AppCompatActivity {
                 JSONArray respJSON = new JSONArray(respStr);
                 countriesString = null;
                 countriesString = new String[respJSON.length()];
-                //Log.e("GoToActivity", "placesString: " + placesString.length);
                 for (int i = 0; i < respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
                     countries.put(obj.getString("name"), (long) obj.getInt("countryId"));
@@ -157,7 +152,6 @@ public class GoToActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             HttpGet get = new HttpGet(getString(R.string.ip) + "countries/" + mId);
-
             get.setHeader("content-type", "application/json");
             try {
                 HttpResponse resp = new DefaultHttpClient().execute(get);
@@ -165,7 +159,6 @@ public class GoToActivity extends AppCompatActivity {
                 JSONArray respJSON = new JSONArray(respStr);
                 regionsString = null;
                 regionsString = new String[respJSON.length()];
-                //Log.e("GoToActivity", "placesString: " + placesString.length);
                 for (int i = 0; i < respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
                     regions.put(obj.getString("name"), (long) obj.getInt("regionId"));
@@ -203,7 +196,6 @@ public class GoToActivity extends AppCompatActivity {
                 JSONArray respJSON = new JSONArray(respStr);
                 citiesString = null;
                 citiesString = new String[respJSON.length()];
-                //Log.e("GoToActivity", "placesString: " + placesString.length);
                 for (int i = 0; i < respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
                     cities.put(obj.getString("name"), (long) obj.getInt("cityId"));
@@ -234,7 +226,6 @@ public class GoToActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             HttpGet get = new HttpGet(getString(R.string.ip) + "cities/" + mId);
-
             get.setHeader("content-type", "application/json");
             try {
                 HttpResponse resp = new DefaultHttpClient().execute(get);
@@ -242,7 +233,6 @@ public class GoToActivity extends AppCompatActivity {
                 JSONArray respJSON = new JSONArray(respStr);
                 addressesString = null;
                 addressesString = new String[respJSON.length()];
-                //Log.e("GoToActivity", "placesString: " + placesString.length);
                 for (int i = 0; i < respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
                     addresses.put(obj.getString("name"), (long) obj.getInt("addressId"));
@@ -331,7 +321,6 @@ public class GoToActivity extends AppCompatActivity {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     addressStrSelected = (String) parent.getItemAtPosition(position);
                     addressIdSelected = addresses.get(addressStrSelected);
-                    Log.e("Goto", addressStrSelected + ", " + cityStrSelected + ", " + regionStrSelected + ", " + countryStrSelected);
                 }
             });
     }
@@ -353,7 +342,6 @@ public class GoToActivity extends AppCompatActivity {
             HttpPut put = new HttpPut(getString(R.string.ip) + "taxis/" + mTaxiId + "/countries/" + mCountryId + "/regions/" + mRegionId + "/cities/" + mCityId + "/addresses/" + mAddressId);
             put.setHeader("content-type", "application/json");
             try {
-                Log.e("GoTo", "taxis/" + mTaxiId + "/countries/" + mCountryId + "/regions/" + mRegionId + "/cities/" + mCityId + "/addresses/" + mAddressId);
                 HttpResponse resp = new DefaultHttpClient().execute(put);
                 String respStr = EntityUtils.toString(resp.getEntity());
                 travelId = Long.valueOf(respStr);

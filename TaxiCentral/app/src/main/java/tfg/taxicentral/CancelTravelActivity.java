@@ -25,7 +25,6 @@ public class CancelTravelActivity extends ListActivity {
         if (mCancelTravelTask != null) {
             return;
         }
-        //TODO Si no estas en un viaje hacer comprobacion para descartar opcion o lo que sea
         mCancelTravelTask = new CancelTravelTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0));
         mCancelTravelTask.execute((Void) null);
         Toast.makeText(getApplicationContext(), "Travel cancelled", Toast.LENGTH_SHORT).show();

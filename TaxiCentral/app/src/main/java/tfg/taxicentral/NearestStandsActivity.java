@@ -36,12 +36,7 @@ public class NearestStandsActivity extends ListActivity {
         }
         mNearestStandsTask = new NearestStandsTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0));
         mNearestStandsTask.execute((Void) null);
-        //TODO resolver sin recurrir a sleeps
-        /*try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
+
         while (nearestStandsTaskFlag == 0) {
 
         }
@@ -89,8 +84,6 @@ public class NearestStandsActivity extends ListActivity {
                     //TODO mirar si lo ideal seria que teniendo un array de ids (manteniendo la misma i que para stand apareciera ya en view taxi stands el numero de taxis en parada
                     stand[i] = obj.getLong("standId") + " - '" + obj.getString("name") + "'";
                     notEmptyStandsFlag = 1;
-
-                    //Log.e("NearestStands","Stand: " + stand[i].toString());
                 }
                 nearestStandsTaskFlag = 1;
             } catch (Exception ex) {

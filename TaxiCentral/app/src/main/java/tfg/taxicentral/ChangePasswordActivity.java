@@ -39,7 +39,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
         mTaxiIdView = (TextView) findViewById(R.id.taxiIdP);
         mPasswordView = (EditText) findViewById(R.id.passwordP);
 
-        mTaxiIdView.setText("TaxiId: " + getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0));
+        mTaxiIdView.setText("Id: " + getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0));
 
         Button mChangePasswordButton = (Button) findViewById(R.id.change_password_button);
         mChangePasswordButton.setOnClickListener(new View.OnClickListener() {

@@ -48,10 +48,7 @@ public class FutureTravelOptionsActivity extends AppCompatActivity {
         mGoToButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO Habria que mirar como ir primero al origen y despues al destino
                 String url = getIntent().getStringExtra("destinationAddressStr") + ", " + getIntent().getStringExtra("destinationCityStr") + ", " + getIntent().getStringExtra("destinationRegionStr") + ", " + getIntent().getStringExtra("destinationCountryStr");
-                Log.e("GoTo", url);
-                //TODO Rectificar los tiempos, se ejecuta el travelId antes que la creacion del travel -> asegurarse
                 mTakeClientToFromFutureTravelTask = new TakeClientToFromFutureTravelTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0),
                         getIntent().getLongExtra("originCountryId",0), getIntent().getLongExtra("originRegionId",0), getIntent().getLongExtra("originCityId", 0), getIntent().getLongExtra("originAddressId",0),
                         getIntent().getLongExtra("destinationCountryId",0), getIntent().getLongExtra("destinationRegionId",0), getIntent().getLongExtra("destinationCityId",0), getIntent().getLongExtra("destinationAddressId",0));
@@ -98,7 +95,6 @@ public class FutureTravelOptionsActivity extends AppCompatActivity {
                 }
                 mCancelFutureTravelTask = new CancelFutureTravelTask(getIntent().getLongExtra("futureTravelId",0));
                 mCancelFutureTravelTask.execute((Void) null);
-                Toast.makeText(getApplicationContext(), "FutureTravel cancelled", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });

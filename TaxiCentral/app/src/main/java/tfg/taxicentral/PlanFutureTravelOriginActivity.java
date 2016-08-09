@@ -103,7 +103,6 @@ public class PlanFutureTravelOriginActivity extends AppCompatActivity {
                 JSONArray respJSON = new JSONArray(respStr);
                 countriesString = null;
                 countriesString = new String[respJSON.length()];
-                //Log.e("GoToActivity", "placesString: " + placesString.length);
                 for (int i = 0; i < respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
                     countries.put(obj.getString("name"), (long) obj.getInt("countryId"));
@@ -134,7 +133,6 @@ public class PlanFutureTravelOriginActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             HttpGet get = new HttpGet(getString(R.string.ip) + "countries/" + mId);
-
             get.setHeader("content-type", "application/json");
             try {
                 HttpResponse resp = new DefaultHttpClient().execute(get);
@@ -142,7 +140,6 @@ public class PlanFutureTravelOriginActivity extends AppCompatActivity {
                 JSONArray respJSON = new JSONArray(respStr);
                 regionsString = null;
                 regionsString = new String[respJSON.length()];
-                //Log.e("GoToActivity", "placesString: " + placesString.length);
                 for (int i = 0; i < respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
                     regions.put(obj.getString("name"), (long) obj.getInt("regionId"));
@@ -180,7 +177,6 @@ public class PlanFutureTravelOriginActivity extends AppCompatActivity {
                 JSONArray respJSON = new JSONArray(respStr);
                 citiesString = null;
                 citiesString = new String[respJSON.length()];
-                //Log.e("GoToActivity", "placesString: " + placesString.length);
                 for (int i = 0; i < respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
                     cities.put(obj.getString("name"), (long) obj.getInt("cityId"));
@@ -211,7 +207,6 @@ public class PlanFutureTravelOriginActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             HttpGet get = new HttpGet(getString(R.string.ip) + "cities/" + mId);
-
             get.setHeader("content-type", "application/json");
             try {
                 HttpResponse resp = new DefaultHttpClient().execute(get);
@@ -219,7 +214,6 @@ public class PlanFutureTravelOriginActivity extends AppCompatActivity {
                 JSONArray respJSON = new JSONArray(respStr);
                 addressesString = null;
                 addressesString = new String[respJSON.length()];
-                //Log.e("GoToActivity", "placesString: " + placesString.length);
                 for (int i = 0; i < respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
                     addresses.put(obj.getString("name"), (long) obj.getInt("addressId"));
@@ -308,7 +302,6 @@ public class PlanFutureTravelOriginActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 addressStrSelected = (String) parent.getItemAtPosition(position);
                 addressIdSelected = addresses.get(addressStrSelected);
-                Log.e("Goto", addressStrSelected + ", " + cityStrSelected + ", " + regionStrSelected + ", " + countryStrSelected);
             }
         });
     }

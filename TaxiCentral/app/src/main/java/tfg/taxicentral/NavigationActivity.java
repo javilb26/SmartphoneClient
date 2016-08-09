@@ -86,7 +86,6 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
             futureStateButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.e("App", "futurestate");
                     Intent intent = new Intent(getApplicationContext(), FutureStateActivity.class);
                     startActivity(intent);
 
@@ -95,18 +94,8 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
             destinationReachedButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.e("NavigationActivity: ", "travelId: " + getIntent().getLongExtra("travelId", 0));
-                    Log.e("NavigationActivity: ", "distance: " + distance);
-                    Log.e("NavigationActivity: ", "firstStart.longitude: " + firstStart.longitude);
-                    Log.e("NavigationActivity: ", "firstStart.latitude: " + firstStart.latitude);
-                    Log.e("NavigationActivity: ", "end.longitude: " + end.longitude);
-                    Log.e("NavigationActivity: ", "end.latitude: " + end.latitude);
-                    Log.e("NavigationActivity", "path: " + path);
                     path2 = path.substring(0,path.length()-1);
-                    Log.e("NavigationActivity", "pathL: " + path.length());
                     path2+=")";
-                    Log.e("NavigationActivity", "path2L: " + path2.length());
-                    Log.e("NavigationActivity", "path2Str: " + path2.substring(path2.length()-5, path2.length()));
                     mDestinationReachedTask = new DestinationReachedTask(getIntent().getLongExtra("travelId", 0), distance, firstStart.longitude, firstStart.latitude, end.longitude, end.latitude, path2);
                     mDestinationReachedTask.execute((Void) null);
                     finish();
@@ -141,18 +130,13 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
             // Instantiates a new Polyline object and adds points to define a rectangle
             PolylineOptions rectOptions = new PolylineOptions();
             String path = getIntent().getStringExtra("path");
-            Log.e("NavigationActivity", "path: " + path);
-            Log.e("NavigationActivity", "path2: " + path.substring(1,path.length()-1));
             String path2 = path.substring(1,path.length()-1);
             path2 = path2 + ",";
             String[] paths = path2.split("],");
             boolean firstPoint = false;
             for (String pathAux: paths) {
-                Log.e("NavigationActivity", "pathAux: " + pathAux);
                 String pathAux2 = pathAux.substring(1,pathAux.length());
-                Log.e("NavigationActivity", "pathAux2: " + pathAux2);
                 String[] aux = pathAux2.split(",");
-                Log.e("NavigationActivity", "aux: " + aux[1] + ", " + aux[0]);
                 double latAux = Double.parseDouble(aux[0]);
                 double lngAux = Double.parseDouble(aux[1]);
                 rectOptions.add(new LatLng(latAux, lngAux));
@@ -202,19 +186,15 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     @Override
     public void onLocationChanged(Location location) {
         start = new LatLng(location.getLatitude(), location.getLongitude());
-        Log.e("Start nuevo", start.latitude + ", " + start.longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(start));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(16));
-        Log.d("NavigationActivity", "onLocationChanged");
         float[] distanceBetweenStarts = new float[1];
         if (oldStart!=null) {
             Location.distanceBetween(start.latitude, start.longitude, oldStart.latitude, oldStart.longitude, distanceBetweenStarts);
-            Log.e("NavigationActivity", "Distance: " + distanceBetweenStarts[0]);
         }
         if ((distanceBetweenStarts[0]>=5)||(firstTime)) {
             oldStart = start;
             firstTime = false;
-            Log.e("Start viejo", oldStart.latitude + ", " + oldStart.longitude);
             mUpdatePositionTaxiTask = new UpdatePositionTaxiTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), start.latitude, start.longitude);
             mUpdatePositionTaxiTask.execute((Void) null);
         }
@@ -230,14 +210,12 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
                     .build();
             routing.execute();
 
-
-
             path+=location.getLatitude()+" "+location.getLongitude()+",";
 
             if (infoRoute != null) {
                 infoRouteTextView.setText(infoRoute);
             }
-            //TODO Contar la distancia real? Mucha carga?
+
             float[] results = new float[1];
             Location.distanceBetween(start.latitude, start.longitude, end.latitude, end.longitude, results);
             if (distance == (long) 0) {
@@ -302,8 +280,6 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         polylines = new ArrayList<>();
         //add route(s) to the map.
         for (int i = 0; i < 1; i++) {
-            //for (int i = 0; i <route.size(); i++) {
-
             //In case of more than X alternative routes
             int colorIndex = i % COLORS.length;
 
@@ -316,21 +292,13 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
 
             infoRouteWithRoutes = "Route " + (i + 1) + ": distance - " + route.get(i).getDistanceValue() + ": duration - " + route.get(i).getDurationValue();
             infoRoute = "distance - " + route.get(i).getDistanceValue() + ": duration - " + route.get(i).getDurationValue();
-            //Toast.makeText(getApplicationContext(), infoRoute,Toast.LENGTH_SHORT).show();
         }
 
-        // Start marker
-
         MarkerOptions options = new MarkerOptions();
-        /*
-        options.position(start);
-        //options.icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue));
-        mMap.addMarker(options);
-        */
+
         // End marker
         options = new MarkerOptions();
         options.position(end);
-        //options.icon(BitmapDescriptorFactory.fromResource(R.drawable.end_green));
         mMap.addMarker(options);
     }
 
@@ -378,7 +346,6 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
                 post.setEntity(entity);
                 HttpResponse resp = httpClient.execute(post);
                 String respStr = EntityUtils.toString(resp.getEntity());
-                Log.e("NavigationActivity", "respStr: " + respStr);
                 if (!respStr.equals("true"))
                     resul = false;
             } catch (Exception ex) {

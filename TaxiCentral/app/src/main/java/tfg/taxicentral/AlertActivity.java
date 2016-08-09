@@ -28,8 +28,6 @@ public class AlertActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alert);
 
-        Log.e("DASDASDASDSAD", FirebaseInstanceId.getInstance().getToken());
-
         /*
         Content-Type: application/json
         Authorization: key=AIzaSyDuJHUIiXZGWgul-eH_28qugSELqErrsOc
@@ -55,7 +53,6 @@ public class AlertActivity extends AppCompatActivity {
                 if (acceptTask != null) {
                     return;
                 }
-                Log.e("AlertActivity", String.valueOf(getIntent().getLongExtra("clientId",0)));
                 acceptTask = new AcceptTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0), getIntent().getLongExtra("clientId",0));
                 acceptTask.execute((Void) null);
                 finish();

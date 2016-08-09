@@ -89,9 +89,7 @@ public class PlanFutureTravelDestinationActivity extends AppCompatActivity imple
         mPlanFutureTravelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //String url = placesStrSelected[3] + ", " + placesStrSelected[2] + ", " + placesStrSelected[1] + ", " + placesStrSelected[0];
                 date = mDay + "-" + mMonth + "-" + mYear + " " + mHour + ":" + mMinute;
-                //TODO Rectificar los tiempos, se ejecuta el travelId antes que la creacion del travel -> asegurarse
                 mPlanFutureTravelTask = new PlanFutureTravelTask(getSharedPreferences("credentials", getApplicationContext().MODE_PRIVATE).getLong("taxiId", 0),
                         getIntent().getLongExtra("placesIdSelectedOrigin0",0), getIntent().getLongExtra("placesIdSelectedOrigin1",0), getIntent().getLongExtra("placesIdSelectedOrigin2",0),
                         getIntent().getLongExtra("placesIdSelectedOrigin3",0), countryIdSelected, regionIdSelected, cityIdSelected, addressIdSelected, date);
@@ -177,7 +175,6 @@ public class PlanFutureTravelDestinationActivity extends AppCompatActivity imple
                 JSONArray respJSON = new JSONArray(respStr);
                 countriesString = null;
                 countriesString = new String[respJSON.length()];
-                //Log.e("GoToActivity", "placesString: " + placesString.length);
                 for (int i = 0; i < respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
                     countries.put(obj.getString("name"), (long) obj.getInt("countryId"));
@@ -208,7 +205,6 @@ public class PlanFutureTravelDestinationActivity extends AppCompatActivity imple
         @Override
         protected Boolean doInBackground(Void... params) {
             HttpGet get = new HttpGet(getString(R.string.ip) + "countries/" + mId);
-
             get.setHeader("content-type", "application/json");
             try {
                 HttpResponse resp = new DefaultHttpClient().execute(get);
@@ -216,7 +212,6 @@ public class PlanFutureTravelDestinationActivity extends AppCompatActivity imple
                 JSONArray respJSON = new JSONArray(respStr);
                 regionsString = null;
                 regionsString = new String[respJSON.length()];
-                //Log.e("GoToActivity", "placesString: " + placesString.length);
                 for (int i = 0; i < respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
                     regions.put(obj.getString("name"), (long) obj.getInt("regionId"));
@@ -254,7 +249,6 @@ public class PlanFutureTravelDestinationActivity extends AppCompatActivity imple
                 JSONArray respJSON = new JSONArray(respStr);
                 citiesString = null;
                 citiesString = new String[respJSON.length()];
-                //Log.e("GoToActivity", "placesString: " + placesString.length);
                 for (int i = 0; i < respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
                     cities.put(obj.getString("name"), (long) obj.getInt("cityId"));
@@ -293,7 +287,6 @@ public class PlanFutureTravelDestinationActivity extends AppCompatActivity imple
                 JSONArray respJSON = new JSONArray(respStr);
                 addressesString = null;
                 addressesString = new String[respJSON.length()];
-                //Log.e("GoToActivity", "placesString: " + placesString.length);
                 for (int i = 0; i < respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
                     addresses.put(obj.getString("name"), (long) obj.getInt("addressId"));
@@ -382,7 +375,6 @@ public class PlanFutureTravelDestinationActivity extends AppCompatActivity imple
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 addressStrSelected = (String) parent.getItemAtPosition(position);
                 addressIdSelected = addresses.get(addressStrSelected);
-                Log.e("Goto", addressStrSelected + ", " + cityStrSelected + ", " + regionStrSelected + ", " + countryStrSelected);
             }
         });
     }
@@ -418,7 +410,6 @@ public class PlanFutureTravelDestinationActivity extends AppCompatActivity imple
                 object.put("originRegionId", mOriginRegionId);
                 object.put("originCityId", mOriginCityId);
                 object.put("originAddressId", mOriginAddressId);
-                Log.e("PlanFutureTravel", "oaid: " + mOriginAddressId.toString());
                 object.put("destinationCountryId", mDestinationCountryId);
                 object.put("destinationRegionId", mDestinationRegionId);
                 object.put("destinationCityId", mDestinationCityId);
@@ -427,7 +418,6 @@ public class PlanFutureTravelDestinationActivity extends AppCompatActivity imple
                 StringEntity entity = new StringEntity(object.toString());
                 post.setEntity(entity);
                 HttpResponse resp = httpClient.execute(post);
-                Log.e("PlanFutureTravel", object.toString());
                 String respStr = EntityUtils.toString(resp.getEntity());
                 if(!respStr.equals("true"))
                     return false;

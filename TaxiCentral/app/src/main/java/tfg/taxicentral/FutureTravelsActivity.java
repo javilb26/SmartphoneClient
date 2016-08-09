@@ -30,6 +30,7 @@ public class FutureTravelsActivity extends ListActivity {
     long[] futureTravelId, originCountryId, originRegionId, originCityId, originAddressId, destinationCountryId, destinationRegionId, destinationCityId, destinationAddressId;
     String[] originCountryStr, originRegionStr, originCityStr, originAddressStr, destinationCountryStr, destinationRegionStr, destinationCityStr, destinationAddressStr;
     int notEmptyHistoryFlag = 0;
+    String[] futureTravels2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +53,17 @@ public class FutureTravelsActivity extends ListActivity {
             Toast.makeText(getApplicationContext(), "No futuretravels", Toast.LENGTH_SHORT).show();
             finish();
         } else {
+            futureTravels2 = new String[futureTravels.length];
+            String futureTravel2;
+            int i = 0;
+            for (String futureTravel: futureTravels) {
+                String[] futureTravelaux = futureTravel.split("-");
+                futureTravel2 = "ID: " + futureTravelaux[0] + "\n" + "Date: " + futureTravelaux[1]+"-"+futureTravelaux[2]+"-"+futureTravelaux[3] + "\n" + "Origin -> Country: " + futureTravelaux[4] + "\n" + "Origin -> Region: " + futureTravelaux[5] + "\n" + "Origin -> City: " + futureTravelaux[6] + "\n" + "Origin -> Address: " + futureTravelaux[7] + "\n" + "Destination -> Country: " + futureTravelaux[8] + "\n" + "Destination -> Region: " + futureTravelaux[9] + "\n" + "Destination -> City: " + futureTravelaux[10] + "\n" + "Destination -> Address: " + futureTravelaux[11] + "\n";
+                futureTravels2[i] = futureTravel2;
+                i++;
+            }
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                    android.R.layout.simple_list_item_1, futureTravels);
+                    android.R.layout.simple_list_item_1, futureTravels2);
             setListAdapter(adapter);
         }
     }
@@ -122,8 +132,6 @@ public class FutureTravelsActivity extends ListActivity {
                 destinationAddressId = new long[99999];
                 for (int i = 0; i < respJSON.length(); i++) {
                     JSONObject obj = respJSON.getJSONObject(i);
-                    //Log.e("HistoryActivity",obj.toString());
-                    //TODO mirar si lo ideal seria que teniendo un array de ids (manteniendo la misma i que para stand apareciera ya en view taxi stands el numero de taxis en parada
                     JSONObject originCountry = obj.getJSONObject("originCountry");
                     JSONObject originRegion = obj.getJSONObject("originRegion");
                     JSONObject originCity = obj.getJSONObject("originCity");
@@ -137,7 +145,6 @@ public class FutureTravelsActivity extends ListActivity {
                     dateAsCalendar.setTimeInMillis(Long.parseLong(obj.getString("date")));
                     futureTravels[i] = obj.getLong("futureTravelId") + " - '" + sdf.format(dateAsCalendar.getTime()) + "'" + " - '" + originCountry.getString("name") + "'" + " - '" + originRegion.getString("name") + "'" + " - '" + originCity.getString("name") + "'" + " - '" + originAddress.getString("name") + "'" + " - '" + destinationCountry.getString("name") + "'" + " - '" + destinationRegion.getString("name") + "'" + " - '" + destinationCity.getString("name") + "'" + " - '" + destinationAddress.getString("name") + "'";
 
-                    //Log.e("NearestStands","Stand: " + stand[i].toString());
                     futureTravelId[i] = obj.getLong("futureTravelId");
                     originCountryStr[i] = originCountry.getString("name");
                     originRegionStr[i] = originRegion.getString("name");
@@ -167,30 +174,5 @@ public class FutureTravelsActivity extends ListActivity {
         }
 
     }
-/*
-    public class NumTaxisStandTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final Long mStandId;
-
-        NumTaxisStandTask(Long standId) {
-            mStandId = standId;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            HttpGet get = new HttpGet(getString(R.string.ip) + "stands/" + mStandId + "/numtaxis");
-            get.setHeader("content-type", "application/json");
-            try {
-                HttpResponse resp = new DefaultHttpClient().execute(get);
-                numTaxis = EntityUtils.toString(resp.getEntity());
-                numTaxisStandTaskFlag = 1;
-            } catch (Exception ex) {
-                Log.e("ServicioRest", "Error!", ex);
-                return false;
-            }
-            return true;
-        }
-
-    }
-*/
 }

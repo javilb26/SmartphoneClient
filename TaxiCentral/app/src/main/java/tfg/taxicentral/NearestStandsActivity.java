@@ -47,7 +47,8 @@ public class NearestStandsActivity extends ListActivity {
             int i=0;
             for (i=0; i<stand.length; i++) {
                 numTaxisStandTaskFlag = 0;
-                mNumTaxisStandTask = new NumTaxisStandTask(new Long(stand[i].substring(0,1)));
+                int pos = stand[i].indexOf("-");
+                mNumTaxisStandTask = new NumTaxisStandTask(new Long(stand[i].substring(0,pos-1)));
                 mNumTaxisStandTask.execute((Void) null);
                 while (numTaxisStandTaskFlag == 0) {
                 }

@@ -80,7 +80,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             public void run(){
                 try {
                     synchronized(this){
-                        wait(10000);
+                        wait(8000);
                     }
                 } catch(InterruptedException ex){
                 }
